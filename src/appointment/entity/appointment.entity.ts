@@ -3,15 +3,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { StatusEnum } from 'src/enums/status.enum';
-import { DoctorEntity } from 'src/doctor/entity/doctor.entity';
-import { PatientEntity } from 'src/patient/entity/patient.entity';
 
-@Entity()
+@Entity('appointments')
 export class Appointment {
   @PrimaryGeneratedColumn()
   id: number;
@@ -22,13 +19,13 @@ export class Appointment {
   @Column()
   date: Date;
 
-  @Column()
-  @ManyToOne(() => PatientEntity, (patient) => patient.id)
-  patient: PatientEntity;
+  // @ManyToOne(() => PatientEntity, (patient) => patient.appointments)
+  // @JoinColumn({ name: 'patient_id' })
+  // patient: PatientEntity;
 
-  @Column()
-  @ManyToOne(() => DoctorEntity, (doctor) => doctor.id)
-  doctor: DoctorEntity;
+  // @ManyToOne(() => DoctorEntity, (doctor) => doctor.appointments)
+  // @JoinColumn({ name: 'doctor_id' })
+  // doctor: DoctorEntity;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsNumber } from '@nestjs/class-validator';
 import { StatusEnum } from 'src/enums/status.enum';
 
-export class AddAppointment {
+export class CreateAppointmentDto {
   status: StatusEnum;
 
   @IsNotEmpty()
