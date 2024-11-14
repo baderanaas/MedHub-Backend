@@ -23,10 +23,10 @@ import { promises } from 'dns';
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
 
-  @Get()
-  async getAppointments(@User() user): Promise<Appointment[]> {
-    return await this.AppointmentService.getAppointments(user);
-  }
+  // @Get()
+  // async getAppointments(@User() user): Promise<Appointment[]> {
+  //   return await this.AppointmentService.getAppointments(user);
+  // }
 
   @Get(':id')
   async getAppointment(

@@ -12,21 +12,30 @@ import { PatientEntity } from 'src/patient/entity/patient.entity';
 import { DoctorEntity } from 'src/doctor/entity/doctor.entity';
 import { StatusEnum } from 'src/enums/status.enum';
 import { time } from 'console';
+import { CrudService } from 'src/common/services/crud.service';
+import { where } from 'sequelize';
 
 @Injectable()
-export class AppointmentService {
-  constructor(
-    private readonly appointmentRepository: Repository<Appointment>,
-  ) {}
+export class AppointmentService extends CrudService<Appointment>{
+  constructor(private appointmentRepository: Repository<Appointment>) {
+    super(appointmentRepository)
+  }
 
-  async getAppointments(user?: UserEntity): Promise<Appointment[]> {
-    if (this.isDoctor(user)) {
-      return this.appointmentRepository.find({ where: { doctor: user } });
-    } else if (this.isPatient(user)) {
-      return this.appointmentRepository.find({ where: { patient: user } });
-    } else {
+  async getDocAppointments(doctorId:number):Promise<Appointment[]>{
+    return this.appointmentRepository.find({where:{
+        doctor:{id:doctorId}
+    }})
+  }
+  async getPatientAppointments(patientId:number):Promise<Appointment[]>{
+    return this.appointmentRepository.find({where:{
+        patient:{id:patientId}
+    }})
+  }
+
+  async getAppointments(): Promise<Appointment[]> {
+   
       return this.appointmentRepository.find();
-    }
+    
   }
 
   async getAppointment(id: number, user?: UserEntity): Promise<Appointment> {
@@ -83,8 +92,8 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     if (
       !this.isDoctor(user, appointment) ||
-      this.isPatient(user, appointment) ||
-      this.isAdmin(user)
+      !this.isPatient(user, appointment) ||
+      !this.isAdmin(user)
     )
       throw new UnauthorizedException(
         'You are not authorized to delete this appointment',
@@ -106,7 +115,7 @@ export class AppointmentService {
     await this.appointmentRepository.save(appointment);
 
     if (status === StatusEnum.ACCEPTED) {
-      const appointments = await this.getAppointments(doctor);
+      const appointments = await this.getDocAppointments(doctor.id);
       for (const appm of appointments) {
         if (appm.id !== id && appm.status === StatusEnum.PENDING) {
           appm.status = StatusEnum.REJECTED;
