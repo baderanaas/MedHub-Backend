@@ -7,6 +7,9 @@ import { Appointment } from './appointment/entity/appointment.entity';
 import { AppointmentModule } from './appointment/appointment.module';
 import { RatingModule } from './rating/rating.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UserModule } from './user/user.module';
+import { PatientModule } from './patient/patient.module';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 
     AppointmentModule,
     RatingModule,
+    UserModule,
+    PatientModule,
+    DoctorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

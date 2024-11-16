@@ -28,9 +28,8 @@ export class AppointmentService {
     return appointment;
   }
 
-  async createAppointment(data: CreateAppointmentDto): Promise<Appointment> {
+  async addAppointment(data: CreateAppointmentDto,patientId:number,doctorId:number): Promise<Appointment> {
     const appointment = this.appointmentRepository.create(data);
-
     return this.appointmentRepository.save(appointment);
   }
 
@@ -39,7 +38,7 @@ export class AppointmentService {
     data: UpdateAppointmentDto,
   ): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
-    Object.assign(appointment, data);
+    this.appointmentRepository.merge(appointment,data);
     return this.appointmentRepository.save(appointment);
   }
 
@@ -58,28 +57,28 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
 
     appointment.status = status;
-    await this.appointmentRepository.save(appointment);
+    return this.appointmentRepository.save(appointment);
 
-    if (status === StatusEnum.ACCEPTED) {
-      const appointments = await this.getAppointments();
-      for (const appm of appointments) {
-        if (appm.id !== id && appm.status === StatusEnum.PENDING) {
-          appm.status = StatusEnum.REJECTED;
-          await this.appointmentRepository.save(appm);
-        }
+    // if (status === StatusEnum.ACCEPTED) {
+    //   const appointments = await this.getAppointments();
+    //   for (const appm of appointments) {
+    //     if (appm.id !== id && appm.status === StatusEnum.PENDING) {
+    //       appm.status = StatusEnum.REJECTED;
+    //       await this.appointmentRepository.save(appm);
+    //     }
       }
-    }
+    
 
-    return appointment;
-  }
+  
+  
 
-  async cancelAppointment(id: number) {
-    const appointment = await this.getAppointment(id);
+  // async cancelAppointment(id: number) {
+  //   const appointment = await this.getAppointment(id);
 
-    appointment.status = StatusEnum.CANCELLED;
-    await this.appointmentRepository.save(appointment);
-    return appointment;
-  }
+  //   appointment.status = StatusEnum.CANCELLED;
+  //   return this.appointmentRepository.save(appointment);
+    
+  // }
 
   async completedAppointment(id: number): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
