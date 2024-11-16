@@ -1,10 +1,12 @@
-import { IsOptional } from '@nestjs/class-validator';
-import { StatusEnum } from 'src/enums/status.enum';
+import { Type } from 'class-transformer';
+import { IsOptional } from 'class-validator';
+import { IsFutureDate } from 'src/common/validators/is-future-date.validator';
 
 export class UpdateAppointmentDto {
   @IsOptional()
-  status: StatusEnum;
-
-  @IsOptional()
+  @IsFutureDate({
+    message: 'The appointment date must be after the current date and time',
+  })
+  @Type(() => Date)
   date: Date;
 }

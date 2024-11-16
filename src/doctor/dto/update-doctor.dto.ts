@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { DoctorSpecialityEnum } from 'src/enums/speciality.enum';
 import { Type } from 'class-transformer';
-import { ValidateAgeConstraint } from 'src/doctor/validators/validate-age.constraint';
+import { ValidateAgeConstraint } from 'src/common/validators/validate-age.constraint';
 import { Validate } from '@nestjs/class-validator';
 import { differenceInYears } from 'date-fns';
 

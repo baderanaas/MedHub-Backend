@@ -12,7 +12,7 @@ import {
 import { DoctorSpecialityEnum } from 'src/enums/speciality.enum';
 import { Type } from 'class-transformer';
 import { differenceInYears } from 'date-fns';
-import { ValidateAgeConstraint } from 'src/doctor/validators/validate-age.constraint';
+import { ValidateAgeConstraint } from 'src/common/validators/validate-age.constraint';
 import { Validate } from '@nestjs/class-validator';
 
 export class CreateDoctorDto {

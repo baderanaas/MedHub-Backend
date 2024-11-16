@@ -8,7 +8,7 @@ import {
   Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ValidateAgeConstraint } from 'src/doctor/validators/validate-age.constraint';
+import { ValidateAgeConstraint } from 'src/common/validators/validate-age.constraint';
 import { Validate } from '@nestjs/class-validator';
 import { differenceInYears } from 'date-fns';
 
