@@ -16,8 +16,12 @@ export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
   @Post()
-  create(@Body() createRatingDto: CreateRatingDto) {
-    return this.ratingService.create(createRatingDto);
+  create(
+    @Body() createRatingDto: CreateRatingDto,
+    @Param('doctorId') doctorId: number,
+    @Param('patientId') patientId: number,
+  ) {
+    return this.ratingService.create(createRatingDto, doctorId, patientId);
   }
 
   @Get()

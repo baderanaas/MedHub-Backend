@@ -35,17 +35,19 @@ export class RatingService {
       doctorId,
       patientId,
     });
+
     return rating.save();
   }
 
   async findAll(): Promise<Rating[]> {
-    return this.ratingModel.find({ deletedAt: null }).exec(); // Exclude soft-deleted records
+    return this.ratingModel.find({ deletedAt: null }).exec();
   }
 
   async findOne(id: string): Promise<Rating> {
     const rating = await this.ratingModel
       .findOne({ _id: id, deletedAt: null })
       .exec();
+
     if (!rating) {
       throw new NotFoundException(`Rating with ID "${id}" not found`);
     }
@@ -58,11 +60,13 @@ export class RatingService {
         new: true,
       })
       .exec();
+
     if (!rating) {
       throw new NotFoundException(
         `Rating with ID "${id}" not found or it has been deleted`,
       );
     }
+
     return rating;
   }
 
@@ -70,6 +74,7 @@ export class RatingService {
     const result = await this.ratingModel
       .findOneAndDelete({ _id: id, deletedAt: null })
       .exec();
+
     if (!result) {
       throw new NotFoundException(
         `Rating with ID "${id}" not found or it has been deleted`,
@@ -79,17 +84,16 @@ export class RatingService {
 
   async softDelete(id: string): Promise<Rating> {
     const rating = await this.ratingModel
-      .findOneAndUpdate(
-        { _id: id, deletedAt: null },
-        { deletedAt: new Date() },
-        { new: true },
-      )
+      .findOne({ _id: id, deletedAt: null })
       .exec();
+
     if (!rating) {
       throw new NotFoundException(
-        `Rating with ID "${id}" not found or it has been deleted`,
+        `Rating with ID "${id}" not found or it has already been deleted`,
       );
     }
-    return rating;
+
+    rating.deletedAt = new Date();
+    return rating.save();
   }
 }
