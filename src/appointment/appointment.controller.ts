@@ -11,7 +11,7 @@ import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { StatusEnum } from 'src/enums/status.enum';
+import { StatusEnum } from 'src/common/enums/status.enum';
 
 @Controller('appointment')
 export class AppointmentController {

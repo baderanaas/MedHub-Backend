@@ -9,7 +9,7 @@ import {
   ValidateIf,
   Matches,
 } from 'class-validator';
-import { DoctorSpecialityEnum } from 'src/enums/speciality.enum';
+import { DoctorSpecialityEnum } from 'src/common/enums/speciality.enum';
 import { Type } from 'class-transformer';
 import { differenceInYears } from 'date-fns';
 import { ValidateAgeConstraint } from 'src/common/validators/validate-age.constraint';

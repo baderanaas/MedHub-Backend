@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Patient } from './entities/patient.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePatientDto } from './dto/create-patient.dto';
-import { Role } from 'src/enums/role.enum';
+import { Role } from 'src/common/enums/role.enum';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { differenceInYears } from 'date-fns';
 
@@ -18,7 +18,7 @@ export class PatientService {
     return this.patientRepository.find();
   }
 
-  async getPatient(id: number): Promise<Patient> {
+  async getPatientById(id: number): Promise<Patient> {
     const patient = await this.patientRepository.findOne({ where: { id: id } });
     if (!patient) {
       throw new NotFoundException('Patient not found');
@@ -39,7 +39,7 @@ export class PatientService {
     patientDto: UpdatePatientDto,
     id: number,
   ): Promise<Patient> {
-    const patient = await this.getPatient(id);
+    const patient = await this.getPatientById(id);
     if (patientDto.dateOfBirth) {
       const currentDate = new Date();
       const age = differenceInYears(currentDate, patientDto.dateOfBirth);
@@ -50,7 +50,7 @@ export class PatientService {
   }
 
   async deletePatient(id: number): Promise<void> {
-    const patient = await this.getPatient(id);
+    const patient = await this.getPatientById(id);
     if (!patient) {
       throw new NotFoundException('Patient not found');
     }

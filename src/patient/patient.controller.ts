@@ -21,7 +21,7 @@ export class PatientController {
 
   @Get(':id')
   async getPatient(@Param('id') id: number) {
-    return await this.patientService.getPatient(id);
+    return await this.patientService.getPatientById(id);
   }
 
   @Post()

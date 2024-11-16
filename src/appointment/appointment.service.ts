@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { StatusEnum } from 'src/enums/status.enum';
+import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 

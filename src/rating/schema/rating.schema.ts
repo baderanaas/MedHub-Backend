@@ -17,6 +17,12 @@ export class Rating extends Document {
 
   @Prop({ default: null })
   deletedAt: Date | null;
+
+  @Prop({ required: true })
+  doctorId: number;
+
+  @Prop({ required: true })
+  patientId: number;
 }
 
 export const RatingSchema = SchemaFactory.createForClass(Rating);

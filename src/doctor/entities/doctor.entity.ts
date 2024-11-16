@@ -1,5 +1,5 @@
 import { Appointment } from 'src/appointment/entity/appointment.entity';
-import { DoctorSpecialityEnum } from 'src/enums/speciality.enum';
+import { DoctorSpecialityEnum } from 'src/common/enums/speciality.enum';
 import { User } from 'src/user/entity/user.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 

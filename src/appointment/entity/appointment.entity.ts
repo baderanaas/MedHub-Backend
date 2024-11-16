@@ -10,7 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { StatusEnum } from 'src/enums/status.enum';
+import { StatusEnum } from 'src/common/enums/status.enum';
 
 @Entity('appointments')
 export class Appointment {

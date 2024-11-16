@@ -4,15 +4,37 @@ import { Model } from 'mongoose';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
 import { Rating } from './schema/rating.schema';
+import { DoctorService } from 'src/doctor/doctor.service';
+import { PatientService } from 'src/patient/patient.service';
 
 @Injectable()
 export class RatingService {
   constructor(
     @InjectModel(Rating.name) private readonly ratingModel: Model<Rating>,
+    private doctorService: DoctorService,
+    private patientService: PatientService,
   ) {}
 
-  async create(createRatingDto: CreateRatingDto): Promise<Rating> {
-    const rating = new this.ratingModel(createRatingDto);
+  async create(
+    createRatingDto: CreateRatingDto,
+    doctorId: number,
+    patientId: number,
+  ): Promise<Rating> {
+    const doctorExists = await this.doctorService.getDoctorById(doctorId);
+    if (!doctorExists) {
+      throw new NotFoundException('Doctor not found');
+    }
+
+    const patientExists = await this.patientService.getPatientById(patientId);
+    if (!patientExists) {
+      throw new NotFoundException('Patient not found');
+    }
+
+    const rating = new this.ratingModel({
+      ...createRatingDto,
+      doctorId,
+      patientId,
+    });
     return rating.save();
   }
 
