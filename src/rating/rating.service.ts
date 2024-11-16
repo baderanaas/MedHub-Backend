@@ -21,7 +21,9 @@ export class RatingService {
   }
 
   async findOne(id: string): Promise<Rating> {
-    const rating = await this.ratingModel.findOne({ _id: id, deletedAt: null }).exec();
+    const rating = await this.ratingModel
+      .findOne({ _id: id, deletedAt: null })
+      .exec();
     if (!rating) {
       throw new NotFoundException(`Rating with ID "${id}" not found`);
     }
@@ -30,27 +32,41 @@ export class RatingService {
 
   async update(id: string, updateRatingDto: UpdateRatingDto): Promise<Rating> {
     const rating = await this.ratingModel
-      .findOneAndUpdate({ _id: id, deletedAt: null }, updateRatingDto, { new: true })
+      .findOneAndUpdate({ _id: id, deletedAt: null }, updateRatingDto, {
+        new: true,
+      })
       .exec();
     if (!rating) {
-      throw new NotFoundException(`Rating with ID "${id}" not found or it has been deleted`);
+      throw new NotFoundException(
+        `Rating with ID "${id}" not found or it has been deleted`,
+      );
     }
     return rating;
   }
 
   async remove(id: string): Promise<void> {
-    const result = await this.ratingModel.findOneAndDelete({ _id: id, deletedAt: null }).exec();
+    const result = await this.ratingModel
+      .findOneAndDelete({ _id: id, deletedAt: null })
+      .exec();
     if (!result) {
-      throw new NotFoundException(`Rating with ID "${id}" not found or it has been deleted`);
+      throw new NotFoundException(
+        `Rating with ID "${id}" not found or it has been deleted`,
+      );
     }
   }
 
   async softDelete(id: string): Promise<Rating> {
     const rating = await this.ratingModel
-      .findOneAndUpdate({ _id: id, deletedAt: null }, { deletedAt: new Date() }, { new: true })
+      .findOneAndUpdate(
+        { _id: id, deletedAt: null },
+        { deletedAt: new Date() },
+        { new: true },
+      )
       .exec();
     if (!rating) {
-      throw new NotFoundException(`Rating with ID "${id}" not found or it has been deleted`);
+      throw new NotFoundException(
+        `Rating with ID "${id}" not found or it has been deleted`,
+      );
     }
     return rating;
   }

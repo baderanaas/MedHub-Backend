@@ -30,10 +30,14 @@ export class AppointmentController {
   @Post(':patientId/doctorId')
   async createAppointment(
     @Body() data: CreateAppointmentDto,
-    @Param('patientId')patientId:number,
-    @Param('doctorId')doctorId:number
+    @Param('patientId') patientId: number,
+    @Param('doctorId') doctorId: number,
   ): Promise<Appointment> {
-    return await this.AppointmentService.addAppointment(data,patientId,doctorId);
+    return await this.AppointmentService.addAppointment(
+      data,
+      patientId,
+      doctorId,
+    );
   }
 
   @Put(':id')

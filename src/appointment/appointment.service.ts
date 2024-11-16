@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -28,7 +25,11 @@ export class AppointmentService {
     return appointment;
   }
 
-  async addAppointment(data: CreateAppointmentDto,patientId:number,doctorId:number): Promise<Appointment> {
+  async addAppointment(
+    data: CreateAppointmentDto,
+    patientId: number,
+    doctorId: number,
+  ): Promise<Appointment> {
     const appointment = this.appointmentRepository.create(data);
     return this.appointmentRepository.save(appointment);
   }
@@ -38,7 +39,7 @@ export class AppointmentService {
     data: UpdateAppointmentDto,
   ): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
-    this.appointmentRepository.merge(appointment,data);
+    this.appointmentRepository.merge(appointment, data);
     return this.appointmentRepository.save(appointment);
   }
 
@@ -66,18 +67,14 @@ export class AppointmentService {
     //       appm.status = StatusEnum.REJECTED;
     //       await this.appointmentRepository.save(appm);
     //     }
-      }
-    
-
-  
-  
+  }
 
   // async cancelAppointment(id: number) {
   //   const appointment = await this.getAppointment(id);
 
   //   appointment.status = StatusEnum.CANCELLED;
   //   return this.appointmentRepository.save(appointment);
-    
+
   // }
 
   async completedAppointment(id: number): Promise<Appointment> {

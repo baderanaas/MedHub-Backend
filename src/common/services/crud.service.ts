@@ -3,7 +3,6 @@ import { DeepPartial, Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
-
 @Injectable()
 export class CrudService<T> {
   constructor(private readonly repository: Repository<T>) {}
@@ -17,10 +16,9 @@ export class CrudService<T> {
     return await this.repository.find();
   }
 
-
   // async update(id: number, data: QueryDeepPartialEntity<T>): Promise<T> {
   //   await this.repository.update(id, data);
-  //   return this.repository.findOne({where:{id:id}}); 
+  //   return this.repository.findOne({where:{id:id}});
   // }
 
   async delete(id: number): Promise<void> {

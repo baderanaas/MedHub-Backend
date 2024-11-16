@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
@@ -18,17 +26,20 @@ export class RatingController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {  // Changed id to string
+  findOne(@Param('id') id: string) {
+    // Changed id to string
     return this.ratingService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto) {  // Changed id to string
-    return this.ratingService.update(id, updateRatingDto);  // Removed '+' operator
+  update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto) {
+    // Changed id to string
+    return this.ratingService.update(id, updateRatingDto); // Removed '+' operator
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {  // Changed id to string
-    return this.ratingService.softDelete(id);  // Use softDelete instead of remove
+  remove(@Param('id') id: string) {
+    // Changed id to string
+    return this.ratingService.softDelete(id); // Use softDelete instead of remove
   }
 }

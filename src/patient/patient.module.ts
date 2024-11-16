@@ -5,8 +5,8 @@ import { PatientService } from './patient.service';
 import { PatientController } from './patient.controller';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Patient])],
-    providers: [PatientService],
-    controllers: [PatientController],
+  imports: [TypeOrmModule.forFeature([Patient])],
+  providers: [PatientService],
+  controllers: [PatientController],
 })
 export class PatientModule {}
