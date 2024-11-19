@@ -16,7 +16,7 @@ export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
   @Post()
-  create(
+  async create(
     @Body() createRatingDto: CreateRatingDto,
     @Param('doctorId') doctorId: number,
     @Param('patientId') patientId: number,
@@ -25,25 +25,25 @@ export class RatingController {
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.ratingService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    // Changed id to string
+  async findOne(@Param('id') id: string) {
     return this.ratingService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto) {
-    // Changed id to string
-    return this.ratingService.update(id, updateRatingDto); // Removed '+' operator
+  async update(
+    @Param('id') id: string,
+    @Body() updateRatingDto: UpdateRatingDto,
+  ) {
+    return this.ratingService.update(id, updateRatingDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    // Changed id to string
-    return this.ratingService.softDelete(id); // Use softDelete instead of remove
+  async remove(@Param('id') id: string) {
+    return this.ratingService.softDelete(id);
   }
 }

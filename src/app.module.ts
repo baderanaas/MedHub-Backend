@@ -11,6 +11,7 @@ import { UserModule } from './user/user.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { AuthModule } from './auth/auth.module';
+import { DoctorNoteModule } from './doctor-note/doctor-note.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { AuthModule } from './auth/auth.module';
     PatientModule,
     DoctorModule,
     AuthModule,
+    DoctorNoteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

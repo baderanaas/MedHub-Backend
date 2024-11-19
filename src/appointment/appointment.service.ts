@@ -27,8 +27,6 @@ export class AppointmentService {
 
   async addAppointment(
     data: CreateAppointmentDto,
-    patientId: number,
-    doctorId: number,
   ): Promise<Appointment> {
     const appointment = this.appointmentRepository.create(data);
     return this.appointmentRepository.save(appointment);
