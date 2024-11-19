@@ -1,54 +1,20 @@
-import { Role } from 'src/common/enums/role.enum';
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Role } from "src/common/enums/role.enum";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
+    @Column()
+    firstName:string;
+    @Column()
+    lastName:string;
+    @Column()
+    age:number;
+    @Column()
+    role:Role;
+    @Column()
+    tel:number;
 
-  @Column()
-  username: string;
 
-  @Column()
-  email: string;
-
-  @Column()
-  lastName: string;
-
-  @Column()
-  firstName: string;
-
-  @Column()
-  dateOfBirth: Date;
-
-  @Column()
-  age: number;
-
-  @Column()
-  role: Role;
-
-  @Column()
-  phone: string;
-
-  @Column()
-  password: string;
-
-  @Column()
-  salt: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 }

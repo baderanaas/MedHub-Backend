@@ -10,6 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorModule } from './doctor/doctor.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { DoctorModule } from './doctor/doctor.module';
     UserModule,
     PatientModule,
     DoctorModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
