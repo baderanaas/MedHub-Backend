@@ -28,20 +28,17 @@ export class User {
   @Column()
   dateOfBirth: Date;
 
-  @Column()
+  @Column({ nullable: true })
   age: number;
 
   @Column()
   role: Role;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column()
   password: string;
-
-  @Column()
-  salt: string;
 
   @CreateDateColumn()
   createdAt: Date;
