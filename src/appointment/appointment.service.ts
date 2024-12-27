@@ -5,12 +5,16 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { PatientService } from 'src/patient/patient.service';
+import { DoctorService } from 'src/doctor/doctor.service';
 
 @Injectable()
 export class AppointmentService {
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
+    private readonly doctorService: DoctorService,
+    private readonly patientService: PatientService,
   ) {}
 
   async getAppointments(): Promise<Appointment[]> {
@@ -30,7 +34,13 @@ export class AppointmentService {
     patientId: number,
     doctorId: number,
   ): Promise<Appointment> {
-    const appointment = this.appointmentRepository.create(data);
+    const patient = await this.patientService.getPatientById(patientId);
+    const doctor = await this.doctorService.getDoctorById(doctorId);
+    const appointment = await this.appointmentRepository.create({
+      ...data,
+      patient,
+      doctor,
+    });
     return this.appointmentRepository.save(appointment);
   }
 
