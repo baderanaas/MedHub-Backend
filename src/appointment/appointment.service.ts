@@ -20,13 +20,16 @@ export class AppointmentService {
   async getAppointments(): Promise<Appointment[]> {
     return this.appointmentRepository.find();
   }
-
   async getAppointment(id: number): Promise<Appointment> {
     const appointment = await this.appointmentRepository.findOne({
       where: { id: id },
     });
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
+  }
+  async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorById(doctorId);
+    return doctor.appointments;
   }
 
   async addAppointment(

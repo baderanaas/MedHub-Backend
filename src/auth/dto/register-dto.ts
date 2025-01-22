@@ -1,3 +1,4 @@
+import { IsNumber } from '@nestjs/class-validator';
 import {
   IsString,
   IsEmail,
@@ -6,6 +7,7 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Role } from 'src/common/enums/role.enum';
+
 
 export class RegisterDto {
   @IsString()
@@ -29,6 +31,10 @@ export class RegisterDto {
   role: Role;
   @IsOptional()
   phone: string;
+
+  @IsOptional()
+  @IsNumber()
+  matricule: number;
 
   @IsString()
   @IsNotEmpty()

@@ -29,8 +29,12 @@ export class AppointmentController {
   async getAppointment(@Param('id') id: number): Promise<Appointment> {
     return await this.AppointmentService.getAppointment(id);
   }
+  @Get('doctor/:id')
+  async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
+    return await this.AppointmentService.getDoctorAppointments(id);
+  }
 
-  @Post(':patientId/doctorId')
+  @Post(':patientId/:doctorId')
   async createAppointment(
     @Body() data: CreateAppointmentDto,
     @Param('patientId') patientId: number,

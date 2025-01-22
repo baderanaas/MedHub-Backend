@@ -39,7 +39,7 @@ export class AuthService {
     };
   }
 
-  async register(userDto: RegisterDto) {
+  async register(userDto: RegisterDto):Promise<Partial<RegisterDto>> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(userDto.password, salt);
     const newUser = this.userRepository.create({
@@ -47,22 +47,25 @@ export class AuthService {
       password: hashedPassword,
     });
     newUser.age = this.calculateAge(newUser);
-    await this.userRepository.save(newUser);
 
     if (userDto.role === 'patient') {
       const newPatient = this.patientRepository.create({
         ...newUser,
       });
-      await this.patientRepository.save(newPatient);
+      const patient = await this.patientRepository.save(newPatient);
+      await this.userRepository.save(newUser);
+      return patient;
     } else if (userDto.role === 'doctor') {
       const newDoctor = this.doctorRepository.create({
         ...newUser,
+        matricule: userDto.matricule,
       });
-      await this.doctorRepository.save(newDoctor);
+      const doctor = await this.doctorRepository.save(newDoctor);
+      await this.userRepository.save(newUser);
+      return doctor;
     }
-    return newUser;
   }
-  calculateAge(user: RegisterDto) {
+  calculateAge(user: Partial<RegisterDto>) {
     const today = new Date();
     const birthDate = new Date(user.dateOfBirth);
     let age = today.getFullYear() - birthDate.getFullYear();
