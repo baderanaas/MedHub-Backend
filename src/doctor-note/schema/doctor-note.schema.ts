@@ -10,7 +10,7 @@ export class DoctorNote extends Document {
   prescription: string;
 
   @Prop()
-  comment: string
+  comment: string;
 
   @Prop({ default: Date.now })
   createdAt: Date;

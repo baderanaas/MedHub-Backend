@@ -68,7 +68,7 @@ export class DoctorNoteService {
   ): Promise<DoctorNote> {
     const updatedDoctorNote = await this.doctorNoteModel
       .findOneAndUpdate(
-        { _id: id, deletedAt: null }, 
+        { _id: id, deletedAt: null },
         { ...updateDoctorNoteDto, updatedAt: new Date() },
         { new: true },
       )

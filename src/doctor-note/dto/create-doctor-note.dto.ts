@@ -17,7 +17,7 @@ export class CreateDoctorNoteDto {
 
   @IsString()
   @IsOptional()
-  comment?: string
+  comment?: string;
 
   @IsOptional()
   @IsDate()

@@ -1,12 +1,19 @@
-import { IsNotEmpty } from '@nestjs/class-validator';
-import { Type } from 'class-transformer';
-import { IsFutureDate } from 'src/common/validators/is-future-date.validator';
+import { IsDate, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { StatusEnum } from 'src/common/enums/status.enum';
 
 export class CreateAppointmentDto {
+  @IsDate()
   @IsNotEmpty()
-  @IsFutureDate({
-    message: 'The appointment date must be after the current date and time',
-  })
-  @Type(() => Date)
   date: Date;
+
+  @IsInt()
+  @IsNotEmpty()
+  patientId: number;
+
+  @IsInt()
+  @IsNotEmpty()
+  doctorId: number;
+
+  @IsEnum(StatusEnum)
+  status: StatusEnum;
 }

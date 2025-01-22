@@ -12,7 +12,6 @@ import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { StatusEnum } from 'src/common/enums/status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @Controller('appointment')
@@ -43,30 +42,33 @@ export class AppointmentController {
     );
   }
 
-  @Put(':id')
+  @Put(':id/userId')
   async updateAppointment(
     @Param('id') id: number,
-
+    @Param('userId') userId: number,
     @Body() data: UpdateAppointmentDto,
   ): Promise<Appointment> {
-    return await this.AppointmentService.updateAppointment(id, data);
+    return await this.AppointmentService.updateAppointment(id, data, userId);
   }
 
-  @Delete(':id')
-  async deleteAppointment(@Param('id') id: number) {
-    return await this.AppointmentService.deleteAppointment(id);
-  }
-
-  @Put('respond/:id')
-  async respondAppointment(
+  @Delete(':id/userId')
+  async deleteAppointment(
     @Param('id') id: number,
-    @Body() status: StatusEnum,
-  ): Promise<Appointment> {
-    return await this.AppointmentService.respondAppointment(id, status);
+    @Param('userId') userId: number,
+  ) {
+    await this.AppointmentService.deleteAppointment(id, userId);
   }
 
-  @Put('complete/:id')
-  async completeAppointment(@Param('id') id: number): Promise<Appointment> {
-    return this.AppointmentService.completedAppointment(id);
-  }
+  // @Put('respond/:id')
+  // async respondAppointment(
+  //   @Param('id') id: number,
+  //   @Body() status: StatusEnum,
+  // ): Promise<Appointment> {
+  //   return await this.AppointmentService.respondAppointment(id, status);
+  // }
+
+  // @Put('complete/:id')
+  // async completeAppointment(@Param('id') id: number): Promise<Appointment> {
+  //   return this.AppointmentService.completedAppointment(id);
+  // }
 }

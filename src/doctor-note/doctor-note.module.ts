@@ -7,11 +7,13 @@ import { AppointmentModule } from 'src/appointment/appointment.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{name: DoctorNote.name, schema: DoctorNoteSchema}]),
-    forwardRef(() => AppointmentModule)
+    MongooseModule.forFeature([
+      { name: DoctorNote.name, schema: DoctorNoteSchema },
+    ]),
+    forwardRef(() => AppointmentModule),
   ],
   controllers: [DoctorNoteController],
   providers: [DoctorNoteService],
-  exports: [MongooseModule, DoctorNoteService]
+  exports: [MongooseModule, DoctorNoteService],
 })
 export class DoctorNoteModule {}
