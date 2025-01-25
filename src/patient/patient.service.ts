@@ -18,8 +18,8 @@ export class PatientService {
     return this.patientRepository.find();
   }
 
-  async getPatientById(id: number): Promise<Patient> {
-    const patient = await this.patientRepository.findOne({ where: { id: id } });
+  async getPatientByUserName(userName: string): Promise<Patient> {
+    const patient = await this.patientRepository.findOne({ where: { username: userName } });
     if (!patient) {
       throw new NotFoundException('Patient not found');
     }
@@ -37,9 +37,9 @@ export class PatientService {
 
   async updatePatient(
     patientDto: UpdatePatientDto,
-    id: number,
+    userName: string,
   ): Promise<Patient> {
-    const patient = await this.getPatientById(id);
+    const patient = await this.getPatientByUserName(userName);
     if (patientDto.dateOfBirth) {
       const currentDate = new Date();
       const age = differenceInYears(currentDate, patientDto.dateOfBirth);
@@ -49,11 +49,11 @@ export class PatientService {
     return this.patientRepository.save(patient);
   }
 
-  async deletePatient(id: number): Promise<void> {
-    const patient = await this.getPatientById(id);
+  async deletePatient(userName: string): Promise<void> {
+    const patient = await this.getPatientByUserName(userName);
     if (!patient) {
       throw new NotFoundException('Patient not found');
     }
-    await this.patientRepository.softDelete(id);
+    await this.patientRepository.softDelete(patient.id);
   }
 }

@@ -7,7 +7,8 @@ import {
   IsOptional,
 } from 'class-validator';
 import { Role } from 'src/common/enums/role.enum';
-
+import { Sexe } from 'src/common/enums/sexe.enum';
+import { DoctorSpecialityEnum } from 'src/common/enums/speciality.enum';
 
 export class RegisterDto {
   @IsString()
@@ -35,6 +36,14 @@ export class RegisterDto {
   @IsOptional()
   @IsNumber()
   matricule: number;
+
+  @IsOptional()
+  @IsNumber()
+  speciality: DoctorSpecialityEnum;
+
+  @IsOptional()
+  @IsEnum(Sexe)
+  sexe: Sexe;
 
   @IsString()
   @IsNotEmpty()

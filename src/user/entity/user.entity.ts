@@ -1,4 +1,5 @@
 import { Role } from 'src/common/enums/role.enum';
+import { Sexe } from 'src/common/enums/sexe.enum';
 import {
   Column,
   CreateDateColumn,
@@ -13,10 +14,10 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({unique:true})
+  @Column({ unique: true })
   username: string;
 
-  @Column({unique:true})
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -24,6 +25,8 @@ export class User {
 
   @Column()
   firstName: string;
+  @Column({ type: 'enum', enum: Sexe })
+  sexe: Sexe;
 
   @Column()
   dateOfBirth: Date;

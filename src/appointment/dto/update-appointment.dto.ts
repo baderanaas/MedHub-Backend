@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsOptional } from 'class-validator';
+import { IsBoolean, IsOptional } from 'class-validator';
 import { IsFutureDate } from 'src/common/validators/is-future-date.validator';
 
 export class UpdateAppointmentDto {
@@ -9,4 +9,7 @@ export class UpdateAppointmentDto {
   })
   @Type(() => Date)
   date: Date;
+  @IsOptional()
+  @IsBoolean()
+  payed:boolean
 }

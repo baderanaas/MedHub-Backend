@@ -59,6 +59,7 @@ export class AuthService {
       const newDoctor = this.doctorRepository.create({
         ...newUser,
         matricule: userDto.matricule,
+        speciality:userDto.speciality
       });
       const doctor = await this.doctorRepository.save(newDoctor);
       await this.userRepository.save(newUser);

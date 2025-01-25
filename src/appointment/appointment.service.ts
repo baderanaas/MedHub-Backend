@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { PatientService } from 'src/patient/patient.service';
 import { DoctorService } from 'src/doctor/doctor.service';
+import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @Injectable()
 export class AppointmentService {
@@ -27,20 +27,56 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
+  async getPatientAppointment(username: string): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    console.log(patient);
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: { username: username } },
+    });
+    console.log(appointments);
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+  async getPatientHistory(username: string): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: patient, date: LessThan(new Date()) },
+    });
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
   async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorById(doctorId);
     return doctor.appointments;
   }
 
   async addAppointment(
-    data: CreateAppointmentDto,
-    patientId: number,
-    doctorId: number,
+    date: CreateAppointmentDto,
+    patientUserName: string,
+    doctorMat: number,
   ): Promise<Appointment> {
-    const patient = await this.patientService.getPatientById(patientId);
-    const doctor = await this.doctorService.getDoctorById(doctorId);
+    const patient =
+      await this.patientService.getPatientByUserName(patientUserName);
+    const doctor = await this.doctorService.getDoctorByMat(doctorMat);
+    // const startRange = new Date(date);
+    // const endRange = new Date(date);
+    // startRange.setMinutes(startRange.getMinutes() - 45);
+    // startRange.setMinutes(startRange.getMinutes() + 45);
+    // const conflictAppointment = this.appointmentRepository.findOne({
+    //   where: [
+    //     {
+    //       doctor: doctor,
+    //       date: Between(startRange, endRange),
+    //     },
+    //   ],
+    // });
+    // if (conflictAppointment) {
+    //   throw new BadRequestException(
+    //     'An appointment already exists within 45 minutes of the requested time.',
+    //   );
+    // }
     const appointment = await this.appointmentRepository.create({
-      ...data,
+      ...date,
       patient,
       doctor,
     });
@@ -72,23 +108,7 @@ export class AppointmentService {
 
     appointment.status = status;
     return this.appointmentRepository.save(appointment);
-
-    // if (status === StatusEnum.ACCEPTED) {
-    //   const appointments = await this.getAppointments();
-    //   for (const appm of appointments) {
-    //     if (appm.id !== id && appm.status === StatusEnum.PENDING) {
-    //       appm.status = StatusEnum.REJECTED;
-    //       await this.appointmentRepository.save(appm);
-    //     }
   }
-
-  // async cancelAppointment(id: number) {
-  //   const appointment = await this.getAppointment(id);
-
-  //   appointment.status = StatusEnum.CANCELLED;
-  //   return this.appointmentRepository.save(appointment);
-
-  // }
 
   async completedAppointment(id: number): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
