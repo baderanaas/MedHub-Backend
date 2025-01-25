@@ -1,13 +1,14 @@
+import { IsNumber } from '@nestjs/class-validator';
 import {
   IsString,
   IsEmail,
-  IsDate,
   IsEnum,
-  IsPhoneNumber,
   IsNotEmpty,
   IsOptional,
 } from 'class-validator';
 import { Role } from 'src/common/enums/role.enum';
+import { Sexe } from 'src/common/enums/sexe.enum';
+import { DoctorSpecialityEnum } from 'src/common/enums/speciality.enum';
 
 export class RegisterDto {
   @IsString()
@@ -31,6 +32,18 @@ export class RegisterDto {
   role: Role;
   @IsOptional()
   phone: string;
+
+  @IsOptional()
+  @IsNumber()
+  matricule: number;
+
+  @IsOptional()
+  @IsEnum(DoctorSpecialityEnum)
+  speciality: DoctorSpecialityEnum;
+
+  @IsOptional()
+  @IsEnum(Sexe)
+  sexe: Sexe;
 
   @IsString()
   @IsNotEmpty()

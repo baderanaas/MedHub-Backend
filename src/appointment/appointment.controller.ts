@@ -29,7 +29,7 @@ export class AppointmentController {
     return await this.AppointmentService.getAppointment(id);
   }
 
-  @Post(':patientId/doctorId')
+  @Post(':patientId/:doctorId')
   async createAppointment(
     @Body() data: CreateAppointmentDto,
     @Param('patientId') patientId: number,
@@ -42,7 +42,7 @@ export class AppointmentController {
     );
   }
 
-  @Put(':id/userId')
+  @Put(':id/:userId')
   async updateAppointment(
     @Param('id') id: number,
     @Param('userId') userId: number,
@@ -51,7 +51,7 @@ export class AppointmentController {
     return await this.AppointmentService.updateAppointment(id, data, userId);
   }
 
-  @Delete(':id/userId')
+  @Delete(':id/:userId')
   async deleteAppointment(
     @Param('id') id: number,
     @Param('userId') userId: number,

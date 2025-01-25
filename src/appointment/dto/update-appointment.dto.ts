@@ -1,8 +1,8 @@
-import { IsDate, IsEnum, IsInt, IsOptional, ValidateIf } from 'class-validator';
+import { IsDate, IsEnum, IsInt, IsISO8601, IsOptional, ValidateIf } from 'class-validator';
 import { StatusEnum } from 'src/common/enums/status.enum';
 
 export class UpdateAppointmentDto {
-  @IsDate()
+  @IsISO8601()
   @IsOptional()
   date?: Date;
 
