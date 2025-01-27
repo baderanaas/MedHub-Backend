@@ -38,7 +38,7 @@ export class RegisterDto {
   matricule: number;
 
   @IsOptional()
-  @IsNumber()
+  @IsEnum(DoctorSpecialityEnum)
   speciality: DoctorSpecialityEnum;
 
   @IsOptional()
