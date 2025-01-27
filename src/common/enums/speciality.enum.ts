@@ -1,0 +1,17 @@
+export enum DoctorSpecialityEnum {
+  CARDIOLOGY = 'Cardiology',
+  DERMATOLOGY = 'Dermatology',
+  GYNECOLOGY = 'Gynecology',
+  PEDIATRICS = 'Pediatrics',
+  ORTHOPEDICS = 'Orthopedics',
+  NEUROLOGY = 'Neurology',
+  PSYCHIATRY = 'Psychiatry',
+  RADIOLOGY = 'Radiology',
+  OPHTHALMOLOGY = 'Ophthalmology',
+  ENT = 'ENT',
+  GENERALIST = 'Generalist',
+  UROLOGY = 'Urology',
+  DENTISTRY = 'Dentistry',
+  ANESTHESIOLOGY = 'Anesthesiology',
+  EMERGENCY_MEDICINE = 'Emergency Medicine',
+}
