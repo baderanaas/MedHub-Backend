@@ -14,6 +14,7 @@ import { Type } from 'class-transformer';
 import { differenceInYears } from 'date-fns';
 import { ValidateAgeConstraint } from 'src/common/validators/validate-age.constraint';
 import { Validate } from '@nestjs/class-validator';
+import { Sexe } from 'src/common/enums/sexe.enum';
 
 export class CreateDoctorDto {
   @IsNotEmpty({ message: 'Lastname is required' })
@@ -55,7 +56,9 @@ export class CreateDoctorDto {
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   email: string;
-
+  @IsNotEmpty({ message: 'Email is required' })
+  @IsEnum(Sexe)
+  sexe:Sexe;
   @ValidateIf((o) => o.dateOfBirth)
   @IsDateString({}, { message: 'Date of Birth must be a valid date' })
   @Validate(ValidateAgeConstraint, [{ minAge: 25, maxAge: 80 }])

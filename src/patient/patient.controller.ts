@@ -1,16 +1,19 @@
 import {
   Body,
   Controller,
-  Delete,
+  // Delete,
   Get,
   Param,
   Post,
-  Put,
+  // Put,
+  UseGuards,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @Controller('patient')
+@UseGuards(JwtAuthGuard)
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
@@ -19,9 +22,9 @@ export class PatientController {
     return await this.patientService.getPatients();
   }
 
-  @Get(':id')
-  async getPatient(@Param('id') id: number) {
-    return await this.patientService.getPatientById(id);
+  @Get(':username')
+  async getPatient(@Param('username') username: string) {
+    return await this.patientService.getPatientByUserName(username);
   }
 
   @Post()
@@ -29,16 +32,16 @@ export class PatientController {
     return await this.patientService.addPatient(patientDto);
   }
 
-  @Put(':id')
-  async updatePatient(
-    @Body() patientDto: CreatePatientDto,
-    @Param('id') id: number,
-  ) {
-    return await this.patientService.updatePatient(patientDto, id);
-  }
+  // @Put(':id')
+  // async updatePatient(
+  //   @Body() patientDto: CreatePatientDto,
+  //   @Param('id') id: number,
+  // ) {
+  //   return await this.patientService.updatePatient(patientDto, id);
+  // }
 
-  @Delete(':id')
-  async deletePatient(@Param('id') id: number) {
-    return await this.patientService.deletePatient(id);
-  }
+  // @Delete(':id')
+  // async deletePatient(@Param('id') id: number) {
+  //   return await this.patientService.deletePatient(id);
+  // }
 }

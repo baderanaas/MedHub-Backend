@@ -5,14 +5,14 @@ import {
 } from 'class-validator';
 
 export function IsFutureDate(validationOptions?: ValidationOptions) {
-  return function (object: any, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'IsFutureDate',
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
       validator: {
-        validate(value: Date, args: ValidationArguments) {
+        validate(value: Date) {
           const currentDate = new Date();
           return value > currentDate;
         },

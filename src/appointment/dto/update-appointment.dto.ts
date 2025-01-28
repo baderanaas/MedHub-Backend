@@ -1,5 +1,6 @@
-import { IsDate, IsEnum, IsInt, IsISO8601, IsOptional, ValidateIf } from 'class-validator';
-import { StatusEnum } from 'src/common/enums/status.enum';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsOptional } from 'class-validator';
+import { IsFutureDate } from 'src/common/validators/is-future-date.validator';
 
 export class UpdateAppointmentDto {
   @IsISO8601()
@@ -20,4 +21,12 @@ export class UpdateAppointmentDto {
   @IsOptional()
   @ValidateIf(() => false)
   doctorId?: number;
+  @IsFutureDate({
+    message: 'The appointment date must be after the current date and time',
+  })
+  @Type(() => Date)
+  date: Date;
+  @IsOptional()
+  @IsBoolean()
+  payed:boolean
 }

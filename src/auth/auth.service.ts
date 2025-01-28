@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register-dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Patient } from 'src/patient/entities/patient.entity';
-import { Doctor } from 'src/doctor/entities/doctor.entity'; // Assuming you have a Doctor entity
+import { Doctor } from 'src/doctor/entities/doctor.entity';
 
 @Injectable()
 export class AuthService {
@@ -15,11 +15,11 @@ export class AuthService {
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Doctor)
-    private readonly doctorRepository: Repository<Doctor>, // Inject Doctor repository
+    private readonly doctorRepository: Repository<Doctor>,
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { email: email } });
     if (user && (await bcrypt.compare(pass, user.password))) {
       return user;
@@ -39,32 +39,45 @@ export class AuthService {
     };
   }
 
-  async register(userDto: RegisterDto) {
+  async register(userDto: RegisterDto):Promise<Partial<RegisterDto>> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(userDto.password, salt);
-
-    // Create and save the User
     const newUser = this.userRepository.create({
       ...userDto,
       password: hashedPassword,
     });
-    await this.userRepository.save(newUser);
+    newUser.age = this.calculateAge(newUser);
 
-    // Based on the role, create a Patient or Doctor entity
     if (userDto.role === 'patient') {
-      // Create Patient from User
       const newPatient = this.patientRepository.create({
-        ...newUser, // Spread the properties of the User to Patient
+        ...newUser,
       });
-      await this.patientRepository.save(newPatient);
+      const patient = await this.patientRepository.save(newPatient);
+      await this.userRepository.save(newUser);
+      return patient;
     } else if (userDto.role === 'doctor') {
-      // Create Doctor from User
       const newDoctor = this.doctorRepository.create({
-        ...newUser, // Spread the properties of the User to Doctor
+        ...newUser,
+        matricule: userDto.matricule,
+        speciality:userDto.speciality
       });
-      await this.doctorRepository.save(newDoctor);
+      const doctor = await this.doctorRepository.save(newDoctor);
+      await this.userRepository.save(newUser);
+      return doctor;
     }
-
-    return newUser;
+  }
+  calculateAge(user: Partial<RegisterDto>) {
+    const today = new Date();
+    const birthDate = new Date(user.dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    if (
+      today.getMonth() > birthDate.getMonth() ||
+      (today.getMonth() == birthDate.getMonth() &&
+        today.getDate() > birthDate.getDate())
+    ) {
+      age = age - 1;
+    }
+    console.log(age);
+    return age;
   }
 }

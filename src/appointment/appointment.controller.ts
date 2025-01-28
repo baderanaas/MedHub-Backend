@@ -5,16 +5,18 @@ import {
   Get,
   Param,
   Post,
+  // Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
+
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
+import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
-@Controller('appointment')
+@Controller('/appointment')
 @UseGuards(JwtAuthGuard)
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
@@ -24,20 +26,32 @@ export class AppointmentController {
     return await this.AppointmentService.getAppointments();
   }
 
-  @Get(':id')
-  async getAppointment(@Param('id') id: number): Promise<Appointment> {
-    return await this.AppointmentService.getAppointment(id);
+  @Get('/patient/:username')
+  async getPatientAppointments(
+    @Param('username') userName: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getPatientAppointment(userName);
+  }
+  @Get('/patient/hisory/:username')
+  async getPatientHistory(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getPatientHistory(username);
+  }
+  @Get('doctor/:id')
+  async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
+    return await this.AppointmentService.getDoctorAppointments(id);
   }
 
-  @Post(':patientId/:doctorId')
+  @Post(':patientUserName/:doctorId')
   async createAppointment(
-    @Body() data: CreateAppointmentDto,
-    @Param('patientId') patientId: number,
+    @Body() date: CreateAppointmentDto,
+    @Param('patientUserName') patientUserName: string,
     @Param('doctorId') doctorId: number,
   ): Promise<Appointment> {
     return await this.AppointmentService.addAppointment(
-      data,
-      patientId,
+      date,
+      patientUserName,
       doctorId,
     );
   }

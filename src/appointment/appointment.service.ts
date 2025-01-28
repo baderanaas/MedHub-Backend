@@ -1,23 +1,17 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { Repository, Between } from 'typeorm';
+import { LessThan, Repository, Between } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
-import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { Patient } from 'src/patient/entities/patient.entity';
-import { Doctor } from 'src/doctor/entities/doctor.entity';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class AppointmentService {
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
-    @InjectRepository(Patient)
-    private readonly patientRepository: Repository<Patient>,
-    @InjectRepository(Doctor)
-    private readonly doctorRepository: Repository<Doctor>,
+    private readonly doctorService: DoctorService,
+    private readonly patientService: PatientService,
   ) {}
 
   async getAppointments(): Promise<Appointment[]> {
@@ -25,7 +19,6 @@ export class AppointmentService {
       relations: ['doctor', 'patient'],
     });
   }
-
   async getAppointment(id: number): Promise<Appointment> {
     const appointment = await this.appointmentRepository.findOne({
       where: { id: id },
@@ -34,27 +27,35 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
+  async getPatientAppointment(username: string): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    console.log(patient);
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: { username: username } },
+    });
+    console.log(appointments);
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+  async getPatientHistory(username: string): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: patient, date: LessThan(new Date()) },
+    });
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+  async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorById(doctorId);
+    return doctor.appointments;
+  }
 
   async addAppointment(
-    data: CreateAppointmentDto,
-    patientId: number,
-    doctorId: number,
+    date: CreateAppointmentDto,
+    patientUserName: string,
+    doctorMat: number,
   ): Promise<Appointment> {
-    const patient = await this.patientRepository.findOne({
-      where: { id: patientId },
-    });
-    const doctor = await this.doctorRepository.findOne({
-      where: { id: doctorId },
-    });
-
-    if (!patient || !doctor) {
-      throw new Error('Patient or Doctor not found');
-    }
-    const appointment = this.appointmentRepository.create({
-      ...data,
-      patient,
-      doctor,
-    });
+    const appointment = this.appointmentRepository.create(data);
     return this.appointmentRepository.save(appointment);
   }
 
@@ -77,40 +78,44 @@ export class AppointmentService {
 
   async deleteAppointment(id: number, userId: number): Promise<void> {
     const appointment = await this.getAppointment(id);
-    if (!appointment) {
-      throw new NotFoundException('Appointment not found');
-    }
-    if (appointment.doctor.id === userId || appointment.patient.id === userId) {
-      appointment.status = StatusEnum.CANCELLED;
-      await this.appointmentRepository.save(appointment);
-      await this.appointmentRepository.softDelete(appointment.id);
-    } else {
-      throw new Error('User not authorized to delete this appointment');
-    }
+    appointment.status = StatusEnum.CANCELLED;
+    await this.appointmentRepository.save(appointment);
+    await this.appointmentRepository.softDelete(appointment.id);
   }
 
-  @Cron('*/15 * * * 1-6')
-  async handleAppointmentCompletion() {
-    console.debug('Checking for appointments to complete...');
+  async respondAppointment(
+    id: number,
+    status: StatusEnum,
+  ): Promise<Appointment> {
+    const appointment = await this.getAppointment(id);
+    if (!appointment) throw new NotFoundException('Appointment not found');
 
-    try {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date(todayStart);
-      todayEnd.setDate(todayStart.getDate() + 1);
+    appointment.status = status;
+    return this.appointmentRepository.save(appointment);
 
-      const appointments = await this.appointmentRepository.find({
-        where: {
-          status: StatusEnum.PENDING,
-          date: Between(todayStart, todayEnd),
-        },
-      });
+    // if (status === StatusEnum.ACCEPTED) {
+    //   const appointments = await this.getAppointments();
+    //   for (const appm of appointments) {
+    //     if (appm.id !== id && appm.status === StatusEnum.PENDING) {
+    //       appm.status = StatusEnum.REJECTED;
+    //       await this.appointmentRepository.save(appm);
+    //     }
+  }
 
-      const now = Date.now();
+  // async cancelAppointment(id: number) {
+  //   const appointment = await this.getAppointment(id);
 
-      for (const appointment of appointments) {
-        const appointmentTime = new Date(appointment.date).getTime();
-        const THIRTY_MINUTES = 30 * 60 * 1000;
+  //   appointment.status = StatusEnum.CANCELLED;
+  //   return this.appointmentRepository.save(appointment);
+
+  // }
+
+  async completedAppointment(id: number): Promise<Appointment> {
+    const appointment = await this.getAppointment(id);
+
+    const THIRTY_MINUTES = 30 * 60 * 1000;
+    const currentTime = new Date().getTime();
+    const appointmentTime = new Date(appointment.date).getTime();
 
         if (now - appointmentTime >= THIRTY_MINUTES) {
           appointment.status = StatusEnum.COMPLETED;

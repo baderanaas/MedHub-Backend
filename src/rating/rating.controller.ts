@@ -1,49 +1,49 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { RatingService } from './rating.service';
-import { CreateRatingDto } from './dto/create-rating.dto';
-import { UpdateRatingDto } from './dto/update-rating.dto';
+// import {
+//   Controller,
+//   Get,
+//   Post,
+//   Body,
+//   Patch,
+//   Param,
+//   Delete,
+// } from '@nestjs/common';
+// import { RatingService } from './rating.service';
+// import { CreateRatingDto } from './dto/create-rating.dto';
+// import { UpdateRatingDto } from './dto/update-rating.dto';
 
-@Controller('rating')
-export class RatingController {
-  constructor(private readonly ratingService: RatingService) {}
+// @Controller('rating')
+// export class RatingController {
+//   constructor(private readonly ratingService: RatingService) {}
 
-  @Post()
-  async create(
-    @Body() createRatingDto: CreateRatingDto,
-    @Param('doctorId') doctorId: number,
-    @Param('patientId') patientId: number,
-  ) {
-    return this.ratingService.create(createRatingDto, doctorId, patientId);
-  }
+//   @Post()
+//   create(
+//     @Body() createRatingDto: CreateRatingDto,
+//     @Param('doctorId') doctorId: number,
+//     @Param('patientId') patientId: number,
+//   ) {
+//     return this.ratingService.create(createRatingDto, doctorId, patientId);
+//   }
 
-  @Get()
-  async findAll() {
-    return this.ratingService.findAll();
-  }
+//   @Get()
+//   findAll() {
+//     return this.ratingService.findAll();
+//   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.ratingService.findOne(id);
-  }
+//   @Get(':id')
+//   findOne(@Param('id') id: string) {
+//     // Changed id to string
+//     return this.ratingService.findOne(id);
+//   }
 
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateRatingDto: UpdateRatingDto,
-  ) {
-    return this.ratingService.update(id, updateRatingDto);
-  }
+//   @Patch(':id')
+//   update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto) {
+//     // Changed id to string
+//     return this.ratingService.update(id, updateRatingDto); // Removed '+' operator
+//   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.ratingService.softDelete(id);
-  }
-}
+//   @Delete(':id')
+//   remove(@Param('id') id: string) {
+//     // Changed id to string
+//     return this.ratingService.softDelete(id); // Use softDelete instead of remove
+//   }
+// }
