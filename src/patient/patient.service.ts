@@ -6,12 +6,15 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { differenceInYears } from 'date-fns';
+import { Appointment } from 'src/appointment/entity/appointment.entity';  
 
 @Injectable()
 export class PatientService {
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
+    @InjectRepository(Appointment)
+    private readonly appointmentRepository: Repository<Appointment>,
   ) {}
 
   async getPatients(): Promise<Patient[]> {
@@ -24,6 +27,16 @@ export class PatientService {
       throw new NotFoundException('Patient not found');
     }
     return patient;
+  }
+  
+  async getPatientsByDoctor(doctorId: number): Promise<Patient[]> {
+    const appointments = await this.appointmentRepository.find({
+      where: { doctor: { id: doctorId } },
+      relations: ['patient'],
+    });
+
+    const patients = appointments.map((appointment) => appointment.patient);
+    return [...new Set(patients)];
   }
 
   async addPatient(patientDto: CreatePatientDto): Promise<Patient> {
