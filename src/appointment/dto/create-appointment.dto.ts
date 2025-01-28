@@ -6,14 +6,14 @@ export class CreateAppointmentDto {
   @IsNotEmpty()
   date: Date;
 
-  @IsInt()
-  @IsNotEmpty()
-  patientId: number;
+  // @IsInt()
+  // @IsNotEmpty()
+  // patientId: number;
 
-  @IsInt()
-  @IsNotEmpty()
-  doctorId: number;
+  // @IsInt()
+  // @IsNotEmpty()
+  // doctorId: number;
 
-  @IsEnum(StatusEnum)
-  status: StatusEnum;
+  // @IsEnum(StatusEnum)
+  // status: StatusEnum;
 }

@@ -1,9 +1,12 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
-import { LessThan, Repository, Between } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { LessThan, Repository } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { DoctorService } from 'src/doctor/doctor.service';
+import { PatientService } from 'src/patient/patient.service';
+import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @Injectable()
 export class AppointmentService {
@@ -27,12 +30,14 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
+
   async getPatientAppointment(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
     const appointments = await this.appointmentRepository.find({
       where: { patient: { username: username } },
     });
+
     console.log(appointments);
     if (!appointments) throw new NotFoundException('Appointment not found');
     return appointments;
@@ -45,17 +50,110 @@ export class AppointmentService {
     if (!appointments) throw new NotFoundException('Appointment not found');
     return appointments;
   }
-  async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
-    const doctor = await this.doctorService.getDoctorById(doctorId);
+
+  async getPatientAppointmentsByStatus(
+    username: string,
+    AppStatus: string,
+  ): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    if (!(AppStatus in StatusEnum)) {
+      throw new Error('Invalid status');
+    }
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: patient, status: StatusEnum[AppStatus as keyof typeof StatusEnum] },
+    });
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
+
+  async getPatientAppointmentsUpcoming(
+    username: string,
+  ): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        patient: patient,
+        date: LessThan(new Date()),
+        status: StatusEnum.ACCEPTED,
+      },
+    });
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
+  async getPatientAppointmentsPending(
+    username: string,
+  ): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: patient, status: StatusEnum.PENDING },
+    });
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
+  async getPatientAppointmentsCancelled(
+    username: string,
+  ): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    const appointments = await this.appointmentRepository.find({
+      where: { patient: patient, status: StatusEnum.CANCELLED },
+    });
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
+  async getDoctorAppointments(matricule: number): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByMat(matricule);
     return doctor.appointments;
   }
 
+  async getDoctorPendingAppointments(
+    matricule: number,
+  ): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByMat(matricule);
+    return this.appointmentRepository.find({
+      where: { doctor: doctor, status: StatusEnum.PENDING },
+    });
+  }
+
+  async getDoctorHistoryAppointments(
+    matricule: number,
+  ): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByMat(matricule);
+    return this.appointmentRepository.find({
+      where: { doctor: doctor, date: LessThan(new Date()) },
+    });
+  }
+
+  async getDoctorUpcomingAppointments(
+    matricule: number,
+  ): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByMat(matricule);
+    return this.appointmentRepository.find({
+      where: {
+        doctor: doctor,
+        date: LessThan(new Date()),
+        status: StatusEnum.ACCEPTED,
+      },
+    });
+  }
+
   async addAppointment(
-    date: CreateAppointmentDto,
+    data: CreateAppointmentDto,
     patientUserName: string,
     doctorMat: number,
   ): Promise<Appointment> {
-    const appointment = this.appointmentRepository.create(data);
+    const patient =
+      await this.patientService.getPatientByUserName(patientUserName);
+    const doctor = await this.doctorService.getDoctorByMat(doctorMat);
+    const appointment = this.appointmentRepository.create({
+      ...data,
+      patient: patient,
+      doctor: doctor,
+      status: StatusEnum.PENDING,
+    });
     return this.appointmentRepository.save(appointment);
   }
 
@@ -76,7 +174,7 @@ export class AppointmentService {
     }
   }
 
-  async deleteAppointment(id: number, userId: number): Promise<void> {
+  async deleteAppointment(id: number): Promise<void> {
     const appointment = await this.getAppointment(id);
     appointment.status = StatusEnum.CANCELLED;
     await this.appointmentRepository.save(appointment);
@@ -92,36 +190,20 @@ export class AppointmentService {
 
     appointment.status = status;
     return this.appointmentRepository.save(appointment);
-
-    // if (status === StatusEnum.ACCEPTED) {
-    //   const appointments = await this.getAppointments();
-    //   for (const appm of appointments) {
-    //     if (appm.id !== id && appm.status === StatusEnum.PENDING) {
-    //       appm.status = StatusEnum.REJECTED;
-    //       await this.appointmentRepository.save(appm);
-    //     }
   }
 
-  // async cancelAppointment(id: number) {
-  //   const appointment = await this.getAppointment(id);
-
-  //   appointment.status = StatusEnum.CANCELLED;
-  //   return this.appointmentRepository.save(appointment);
-
-  // }
-
-  async completedAppointment(id: number): Promise<Appointment> {
+  async completedAppointment(id: number) {
     const appointment = await this.getAppointment(id);
 
-    const THIRTY_MINUTES = 30 * 60 * 1000;
-    const currentTime = new Date().getTime();
-    const appointmentTime = new Date(appointment.date).getTime();
+    try {
+      const THIRTY_MINUTES = 30 * 60 * 1000;
+      const currentTime = new Date().getTime();
+      const appointmentTime = new Date(appointment.date).getTime();
 
-        if (now - appointmentTime >= THIRTY_MINUTES) {
-          appointment.status = StatusEnum.COMPLETED;
-          await this.appointmentRepository.save(appointment);
-          console.log(`Appointment ${appointment.id} marked as completed.`);
-        }
+      if (currentTime - appointmentTime >= THIRTY_MINUTES) {
+        appointment.status = StatusEnum.COMPLETED;
+        await this.appointmentRepository.save(appointment);
+        console.log(`Appointment ${appointment.id} marked as completed.`);
       }
     } catch (error) {
       console.error('Error in appointment completion scheduler:', error);
