@@ -1,5 +1,12 @@
 import { Type } from 'class-transformer';
-import { IsBoolean, IsOptional, IsISO8601, IsEnum, IsInt, ValidateIf } from 'class-validator';
+import {
+  IsBoolean,
+  IsOptional,
+  IsISO8601,
+  IsEnum,
+  IsInt,
+  ValidateIf,
+} from 'class-validator';
 import { IsFutureDate } from 'src/common/validators/is-future-date.validator';
 import { StatusEnum } from 'src/common/enums/status.enum';
 
@@ -27,5 +34,5 @@ export class UpdateAppointmentDto {
 
   @IsOptional()
   @IsBoolean()
-  payed:boolean
+  payed: boolean;
 }

@@ -7,6 +7,7 @@ import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { PatientService } from 'src/patient/patient.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { AvailableSessionsDto } from './dto/availableSessionsDto';
 
 @Injectable()
 export class AppointmentService {
@@ -22,6 +23,7 @@ export class AppointmentService {
       relations: ['doctor', 'patient'],
     });
   }
+
   async getAppointment(id: number): Promise<Appointment> {
     const appointment = await this.appointmentRepository.findOne({
       where: { id: id },
@@ -31,7 +33,7 @@ export class AppointmentService {
     return appointment;
   }
 
-  async getPatientAppointment(username: string): Promise<Appointment[]> {
+  async getPatientAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
     const appointments = await this.appointmentRepository.find({
@@ -42,88 +44,88 @@ export class AppointmentService {
     if (!appointments) throw new NotFoundException('Appointment not found');
     return appointments;
   }
-  async getPatientHistory(username: string): Promise<Appointment[]> {
-    const patient = await this.patientService.getPatientByUserName(username);
-    const appointments = await this.appointmentRepository.find({
-      where: { patient: patient, date: LessThan(new Date()) },
-    });
-    if (!appointments) throw new NotFoundException('Appointment not found');
-    return appointments;
-  }
 
-  async getPatientAppointmentsByStatus(
+  async getPatientAppointmentsHistory(
     username: string,
-    AppStatus: string,
+    query: { status?: StatusEnum; date?: Date } = {},
   ): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
-    if (!(AppStatus in StatusEnum)) {
-      throw new Error('Invalid status');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: any = { patient: patient };
+
+    if (query.status) {
+      whereClause.status = query.status;
     }
+
+    if (query.date) {
+      whereClause.date = query.date;
+    }
+
     const appointments = await this.appointmentRepository.find({
-      where: { patient: patient, status: StatusEnum[AppStatus as keyof typeof StatusEnum] },
+      where: whereClause,
+      order: { date: 'DESC' },
     });
-    if (!appointments) throw new NotFoundException('Appointment not found');
+
+    if (!appointments.length)
+      throw new NotFoundException('Appointment not found');
     return appointments;
   }
 
-
-  async getPatientAppointmentsUpcoming(
+  async getPatientUpcomingAppointments(
     username: string,
   ): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
-    const appointments = await this.appointmentRepository.find({
+    return this.appointmentRepository.find({
       where: {
         patient: patient,
         date: LessThan(new Date()),
         status: StatusEnum.ACCEPTED,
       },
+      order: { date: 'ASC' },
     });
-    if (!appointments) throw new NotFoundException('Appointment not found');
-    return appointments;
   }
 
-  async getPatientAppointmentsPending(
-    username: string,
-  ): Promise<Appointment[]> {
-    const patient = await this.patientService.getPatientByUserName(username);
-    const appointments = await this.appointmentRepository.find({
-      where: { patient: patient, status: StatusEnum.PENDING },
-    });
-    if (!appointments) throw new NotFoundException('Appointment not found');
-    return appointments;
-  }
-
-  async getPatientAppointmentsCancelled(
-    username: string,
-  ): Promise<Appointment[]> {
-    const patient = await this.patientService.getPatientByUserName(username);
-    const appointments = await this.appointmentRepository.find({
-      where: { patient: patient, status: StatusEnum.CANCELLED },
-    });
-    if (!appointments) throw new NotFoundException('Appointment not found');
-    return appointments;
-  }
-
-  async getDoctorAppointments(matricule: number): Promise<Appointment[]> {
-    const doctor = await this.doctorService.getDoctorByMat(matricule);
+  async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorById(doctorId);
     return doctor.appointments;
   }
 
+  async getDoctorAppointmentsHistory(
+    matricule: number,
+    query: { status?: StatusEnum; date?: Date } = {},
+  ): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByMat(matricule);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: any = { doctor: doctor };
+
+    if (query.status) {
+      whereClause.status = query.status;
+    }
+
+    if (query.date) {
+      whereClause.date = query.date;
+    }
+
+    const appointments = await this.appointmentRepository.find({
+      where: whereClause,
+      order: { date: 'DESC' },
+    });
+
+    if (!appointments.length)
+      throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
   async getDoctorPendingAppointments(
     matricule: number,
   ): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorByMat(matricule);
     return this.appointmentRepository.find({
-      where: { doctor: doctor, status: StatusEnum.PENDING },
-    });
-  }
-
-  async getDoctorHistoryAppointments(
-    matricule: number,
-  ): Promise<Appointment[]> {
-    const doctor = await this.doctorService.getDoctorByMat(matricule);
-    return this.appointmentRepository.find({
-      where: { doctor: doctor, date: LessThan(new Date()) },
+      where: {
+        doctor: doctor,
+        status: StatusEnum.PENDING,
+        date: LessThan(new Date()),
+      },
+      order: { date: 'ASC' },
     });
   }
 
@@ -140,7 +142,7 @@ export class AppointmentService {
     });
   }
 
-  async addAppointment(
+  async addAppointmentByPatient(
     data: CreateAppointmentDto,
     patientUserName: string,
     doctorMat: number,
@@ -157,21 +159,53 @@ export class AppointmentService {
     return this.appointmentRepository.save(appointment);
   }
 
-  async updateAppointment(
+  async addAppointmentByDoctor(
+    data: CreateAppointmentDto,
+    doctorMat: number,
+    patientUserName: string,
+  ): Promise<Appointment> {
+    const patient =
+      await this.patientService.getPatientByUserName(patientUserName);
+    const doctor = await this.doctorService.getDoctorByMat(doctorMat);
+    const appointment = this.appointmentRepository.create({
+      ...data,
+      patient: patient,
+      doctor: doctor,
+      status: StatusEnum.ACCEPTED,
+    });
+    return this.appointmentRepository.save(appointment);
+  }
+
+  async updateAppointmentByDoctor(
     id: number,
     data: UpdateAppointmentDto,
-    userId: number,
+    matricule: number,
   ): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
     if (!appointment) {
       throw new NotFoundException('Appointment not found');
     }
-    if (appointment.doctor.id === userId || appointment.patient.id === userId) {
+    if (appointment.doctor.matricule === matricule) {
       this.appointmentRepository.merge(appointment, data);
       return this.appointmentRepository.save(appointment);
-    } else {
-      throw new Error('User not authorized to update this appointment');
     }
+    throw new Error('Doctor not authorized to update this appointment');
+  }
+
+  async updateAppointmentByPatient(
+    id: number,
+    data: UpdateAppointmentDto,
+    username: string,
+  ): Promise<Appointment> {
+    const appointment = await this.getAppointment(id);
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+    if (appointment.patient.username === username) {
+      this.appointmentRepository.merge(appointment, data);
+      return this.appointmentRepository.save(appointment);
+    }
+    throw new Error('Patient not authorized to update this appointment');
   }
 
   async deleteAppointment(id: number): Promise<void> {
@@ -179,6 +213,55 @@ export class AppointmentService {
     appointment.status = StatusEnum.CANCELLED;
     await this.appointmentRepository.save(appointment);
     await this.appointmentRepository.softDelete(appointment.id);
+  }
+
+  async deleteAppointmentByDoctor(
+    id: number,
+    matricule: number,
+  ): Promise<void> {
+    const appointment = await this.getAppointment(id);
+    if (appointment.doctor.matricule === matricule) {
+      return await this.deleteAppointment(id);
+    }
+    throw new Error('Doctor not authorized to delete this appointment');
+  }
+
+  async deleteAppointmentByPatient(
+    id: number,
+    username: string,
+  ): Promise<void> {
+    const appointment = await this.getAppointment(id);
+    if (appointment.patient.username === username) {
+      return await this.deleteAppointment(id);
+    }
+    throw new Error('Patient not authorized to delete this appointment');
+  }
+
+  async getAvailableSessions(
+    availableSessionss: AvailableSessionsDto,
+  ): Promise<number[]> {
+    const { date, username } = availableSessionss;
+    const formattedDate = new Date(date);
+    const allSessions = [1, 2, 3, 4, 5, 6, 7, 8];
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: {
+          username: username,
+        },
+        date: formattedDate,
+      },
+    });
+    console.log(appointments);
+    console.log('appointments' + appointments);
+    const reservedSessions = appointments.map(
+      (appointment) => appointment.session,
+    );
+    console.log('reserved' + reservedSessions);
+    const availableSessions = allSessions.filter(
+      (session) => !reservedSessions.includes(session),
+    );
+    console.log('available' + availableSessions);
+    return availableSessions;
   }
 
   async respondAppointment(

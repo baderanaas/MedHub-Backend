@@ -19,8 +19,10 @@ export class Appointment {
 
   @Column({ type: 'enum', enum: StatusEnum, default: StatusEnum.PENDING })
   status: StatusEnum;
-  @Column({ nullable: true })
+  @Column({ type: 'date', nullable: true })
   date: Date;
+  @Column()
+  session: number;
   @Column({ default: false })
   payed: boolean;
 

@@ -39,7 +39,7 @@ export class AuthService {
     };
   }
 
-  async register(userDto: RegisterDto):Promise<Partial<RegisterDto>> {
+  async register(userDto: RegisterDto): Promise<Partial<RegisterDto>> {
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(userDto.password, salt);
     const newUser = this.userRepository.create({
@@ -59,7 +59,7 @@ export class AuthService {
       const newDoctor = this.doctorRepository.create({
         ...newUser,
         matricule: userDto.matricule,
-        speciality:userDto.speciality
+        speciality: userDto.speciality,
       });
       const doctor = await this.doctorRepository.save(newDoctor);
       await this.userRepository.save(newUser);

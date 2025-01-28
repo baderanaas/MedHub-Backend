@@ -58,7 +58,7 @@ export class CreateDoctorDto {
   email: string;
   @IsNotEmpty({ message: 'Email is required' })
   @IsEnum(Sexe)
-  sexe:Sexe;
+  sexe: Sexe;
   @ValidateIf((o) => o.dateOfBirth)
   @IsDateString({}, { message: 'Date of Birth must be a valid date' })
   @Validate(ValidateAgeConstraint, [{ minAge: 25, maxAge: 80 }])

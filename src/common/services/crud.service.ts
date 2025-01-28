@@ -2,7 +2,6 @@
 import { DeepPartial, Repository } from 'typeorm';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
-
 @Injectable()
 export class CrudService<T> {
   constructor(private readonly repository: Repository<T>) {}
