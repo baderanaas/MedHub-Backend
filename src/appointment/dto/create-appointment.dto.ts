@@ -1,6 +1,6 @@
 // import { IsNotEmpty } from '@nestjs/class-validator';
 import { Type } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 // import { IsFutureDate } from 'src/common/validators/is-future-date.validator';
 
 export class CreateAppointmentDto {
@@ -11,4 +11,8 @@ export class CreateAppointmentDto {
   @Type(() => Date)
   @IsNotEmpty()
   date: Date;
+  @IsNumber()
+  @IsNotEmpty()
+  session:number;
+
 }

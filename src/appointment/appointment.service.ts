@@ -7,6 +7,7 @@ import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { PatientService } from 'src/patient/patient.service';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { AvailableSessionsDto } from './dto/availableSessionsDto';
 
 @Injectable()
 export class AppointmentService {
@@ -51,32 +52,16 @@ export class AppointmentService {
   }
 
   async addAppointment(
-    date: CreateAppointmentDto,
+    data: CreateAppointmentDto,
     patientUserName: string,
     doctorMat: number,
   ): Promise<Appointment> {
     const patient =
       await this.patientService.getPatientByUserName(patientUserName);
     const doctor = await this.doctorService.getDoctorByMat(doctorMat);
-    // const startRange = new Date(date);
-    // const endRange = new Date(date);
-    // startRange.setMinutes(startRange.getMinutes() - 45);
-    // startRange.setMinutes(startRange.getMinutes() + 45);
-    // const conflictAppointment = this.appointmentRepository.findOne({
-    //   where: [
-    //     {
-    //       doctor: doctor,
-    //       date: Between(startRange, endRange),
-    //     },
-    //   ],
-    // });
-    // if (conflictAppointment) {
-    //   throw new BadRequestException(
-    //     'An appointment already exists within 45 minutes of the requested time.',
-    //   );
-    // }
+
     const appointment = await this.appointmentRepository.create({
-      ...date,
+      ...data,
       patient,
       doctor,
     });
@@ -97,6 +82,32 @@ export class AppointmentService {
     appointment.status = StatusEnum.CANCELLED;
     await this.appointmentRepository.save(appointment);
     await this.appointmentRepository.softDelete(appointment.id);
+  }
+  async getAvailableSessions(
+    availableSessionss: AvailableSessionsDto,
+  ): Promise<number[]> {
+    const { date, username } = availableSessionss;
+    const formattedDate = new Date(date);
+    const allSessions = [1, 2, 3, 4, 5, 6, 7, 8];
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: {
+          username: username,
+        },
+        date: formattedDate,
+      },
+    });
+    console.log(appointments);
+    console.log('appointments' + appointments);
+    const reservedSessions = appointments.map(
+      (appointment) => appointment.session,
+    );
+    console.log('reserved' + reservedSessions);
+    const availableSessions = allSessions.filter(
+      (session) => !reservedSessions.includes(session),
+    );
+    console.log('available' + availableSessions);
+    return availableSessions;
   }
 
   async respondAppointment(
