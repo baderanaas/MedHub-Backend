@@ -12,12 +12,11 @@ import {
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
-
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { AvailableSessionsDto } from './dto/availableSessionsDto';
+
 
 @Controller('/appointment')
 @UseGuards(JwtAuthGuard)
@@ -82,8 +81,12 @@ export class AppointmentController {
   }
   @Get('availableSessions')
   async getAvailableSessions(
-    @Query('available-sessions') availableSessions: AvailableSessionsDto,
+    @Query('date') date: string,
+    @Query('username')
+    username: string,
   ): Promise<number[]> {
+    console.log('query param' + date + username);
+    const availableSessions = { date, username };
     return await this.AppointmentService.getAvailableSessions(
       availableSessions,
     );
