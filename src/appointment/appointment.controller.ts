@@ -17,7 +17,6 @@ import { StatusEnum } from 'src/common/enums/status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
-
 @Controller('/appointment')
 @UseGuards(JwtAuthGuard)
 export class AppointmentController {

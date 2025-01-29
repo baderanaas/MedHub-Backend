@@ -29,7 +29,9 @@ export class DoctorService {
       where: { matricule: matricule },
     });
     if (!doctor) {
-      throw new NotFoundException(`Doctor with Matricule "${matricule}" not found`);
+      throw new NotFoundException(
+        `Doctor with Matricule "${matricule}" not found`,
+      );
     }
     return doctor;
   }

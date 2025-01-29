@@ -19,7 +19,9 @@ export class PatientService {
   }
 
   async getPatientByUserName(userName: string): Promise<Patient> {
-    const patient = await this.patientRepository.findOne({ where: { username: userName } });
+    const patient = await this.patientRepository.findOne({
+      where: { username: userName },
+    });
     if (!patient) {
       throw new NotFoundException('Patient not found');
     }

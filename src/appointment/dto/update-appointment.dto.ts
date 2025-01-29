@@ -11,5 +11,5 @@ export class UpdateAppointmentDto {
   date: Date;
   @IsOptional()
   @IsBoolean()
-  payed:boolean
+  payed: boolean;
 }

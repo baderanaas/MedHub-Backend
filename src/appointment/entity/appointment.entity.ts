@@ -20,7 +20,7 @@ export class Appointment {
   @Column({ type: 'enum', enum: StatusEnum, default: StatusEnum.PENDING })
   status: StatusEnum;
   @Column({ type: 'date', nullable: true })
-  date: Date|string;
+  date: Date | string;
   @Column()
   session: number;
   @Column({ default: false })
