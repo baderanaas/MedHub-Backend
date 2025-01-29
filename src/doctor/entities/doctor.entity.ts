@@ -5,7 +5,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class Doctor extends User {
-  @Column({ unique: true })
+  @Column({ type: 'integer', unique: true, generated: 'increment' })
   matricule: number;
 
   @Column({

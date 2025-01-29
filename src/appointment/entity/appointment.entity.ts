@@ -19,14 +19,18 @@ export class Appointment {
 
   @Column({ type: 'enum', enum: StatusEnum, default: StatusEnum.PENDING })
   status: StatusEnum;
-  @Column()
+  @Column({ type: 'date', nullable: true })
   date: Date;
+  @Column()
+  session: number;
+  @Column({ default: false })
+  payed: boolean;
 
   @ManyToOne(() => Patient, (patient) => patient.appointments)
   @JoinColumn({ name: 'patient_id' })
   patient: Patient;
 
-  @ManyToOne(() => Doctor, (doctor) => doctor.appointments)
+  @ManyToOne(() => Doctor, (doctor) => doctor.appointments, { eager: true })
   @JoinColumn({ name: 'doctor_id' })
   doctor: Doctor;
 

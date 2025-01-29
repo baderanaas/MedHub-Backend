@@ -1,21 +1,28 @@
-import { Jwt } from './../../node_modules/@types/jsonwebtoken/index.d';
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import * as dotenv from 'dotenv';
-import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './jwt-strategy';
+import { UserModule } from 'src/user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/user/entity/user.entity';
+import { Patient } from 'src/patient/entities/patient.entity';
+import { PatientModule } from 'src/patient/patient.module';
+import { Doctor } from 'src/doctor/entities/doctor.entity';
 
-dotenv.config();
 @Module({
-    imports:[PassportModule,
+  imports: [
+    TypeOrmModule.forFeature([User, Patient, Doctor]),
+    PassportModule,
     JwtModule.register({
-        secret:process.env.JWT_SECRET,
-        signOptions: { expiresIn: '1h' },
-    })],
-    controllers:[AuthController],
-    providers:[AuthService]
-    
-    
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1h' },
+    }),
+    UserModule,
+    PatientModule,
+  ],
+  providers: [AuthService, JwtStrategy],
+  controllers: [AuthController],
 })
 export class AuthModule {}
