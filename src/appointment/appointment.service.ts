@@ -159,23 +159,6 @@ export class AppointmentService {
     return this.appointmentRepository.save(appointment);
   }
 
-  async addAppointmentByDoctor(
-    data: CreateAppointmentDto,
-    doctorMat: number,
-    patientUserName: string,
-  ): Promise<Appointment> {
-    const patient =
-      await this.patientService.getPatientByUserName(patientUserName);
-    const doctor = await this.doctorService.getDoctorByMat(doctorMat);
-    const appointment = this.appointmentRepository.create({
-      ...data,
-      patient: patient,
-      doctor: doctor,
-      status: StatusEnum.ACCEPTED,
-    });
-    return this.appointmentRepository.save(appointment);
-  }
-
   async updateAppointmentByDoctor(
     id: number,
     data: UpdateAppointmentDto,

@@ -29,14 +29,14 @@ export class AppointmentController {
     return await this.AppointmentService.getAppointments();
   }
 
-  @Get('/patient/:username')
+  @Get('patient/:username')
   async getPatientAppointments(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientAppointments(userName);
   }
 
-  @Get('patient/history/:username/?status=:status?&date=:date?')
+  @Get('patient/history/:username')
   async getPatientAppointmentsHistory(
     @Param('username') username: string,
     @Query('status') status: StatusEnum,
@@ -101,19 +101,6 @@ export class AppointmentController {
       date,
       patientUserName,
       matricule,
-    );
-  }
-
-  @Post('doctor/:matricule/:username')
-  async createAppointmentByDoctor(
-    @Body() date: CreateAppointmentDto,
-    @Param('matricule') matricule: number,
-    @Param('username') username: string,
-  ): Promise<Appointment> {
-    return await this.AppointmentService.addAppointmentByDoctor(
-      date,
-      matricule,
-      username,
     );
   }
 
