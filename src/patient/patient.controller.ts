@@ -13,7 +13,7 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @Controller('patient')
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 

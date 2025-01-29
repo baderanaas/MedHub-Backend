@@ -18,7 +18,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @Controller('/appointment')
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
 
@@ -33,7 +33,7 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientAppointment(userName);
   }
-  @Get('/patient/hisory/:username')
+  @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {

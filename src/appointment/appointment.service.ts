@@ -38,14 +38,31 @@ export class AppointmentService {
     if (!appointments) throw new NotFoundException('Appointment not found');
     return appointments;
   }
+
+
   async getPatientHistory(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
+  
+    if (!patient) {
+      throw new NotFoundException(`Patient with username "${username}" not found`);
+    }
+  
     const appointments = await this.appointmentRepository.find({
-      where: { patient: patient, date: LessThan(new Date()) },
+      where: {
+        patient: { username: username },
+        status: StatusEnum.ACCEPTED, 
+        //date: LessThan(new Date()),
+      },
     });
-    if (!appointments) throw new NotFoundException('Appointment not found');
+  
+    if (!appointments.length) {
+      throw new NotFoundException('No  past appointments found');
+    }
+  
     return appointments;
   }
+
+
   async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorById(doctorId);
     return doctor.appointments;
