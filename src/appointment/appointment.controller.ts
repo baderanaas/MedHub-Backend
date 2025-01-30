@@ -33,12 +33,23 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientAppointment(userName);
   }
+
+  //working here
+  @Get('/patient/upcoming/:username')
+  async getUpcomingAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getUpcomingAppointments(username);
+  }
+
   @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientHistory(username);
   }
+
+  //till here
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
