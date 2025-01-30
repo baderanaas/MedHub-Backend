@@ -32,21 +32,16 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
-  async getPatientAppointment(username: string): Promise<Appointment[]> {
-    const patient = await this.patientService.getPatientByUserName(username);
-    console.log(patient);
-
+  async getPatientAppointment(userName: string): Promise<Appointment[]> {
     const appointments = await this.appointmentRepository.find({
-      where: {
-        patient: { username: username },
-        date: MoreThanOrEqual(new Date()),
-        status: StatusEnum.ACCEPTED,
-      },
+      where: { patient: { username: userName } },
+      relations: ['doctor'],
     });
-
-    if (!appointments) throw new NotFoundException('Appointment not found');
+  
+    console.log('Fetched Appointments:', appointments);
     return appointments;
   }
+  
   async getPatientRequests(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
