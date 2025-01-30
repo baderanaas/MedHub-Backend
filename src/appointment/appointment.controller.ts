@@ -71,17 +71,24 @@ export class AppointmentController {
     return await this.AppointmentService.deleteAppointment(id);
   }
 
+ 
   @Put('respond/:id')
   async respondAppointment(
     @Param('id') id: number,
-    @Body() body: { status: StatusEnum }, // Expect the body to contain a "status" field
+    @Body() body: { status: StatusEnum }  // Ensure correct format
   ): Promise<Appointment> {
     return await this.AppointmentService.respondAppointment(id, body.status);
   }
+  
   
 
   @Put('complete/:id')
   async completeAppointment(@Param('id') id: number): Promise<Appointment> {
     return this.AppointmentService.completedAppointment(id);
   }
+  @Put('pay/:id')
+  async payAppointment(@Param('id') id: number): Promise<Appointment> {
+  return this.AppointmentService.payAppointment(id);
+  }
+
 }

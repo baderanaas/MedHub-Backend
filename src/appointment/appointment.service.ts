@@ -127,4 +127,10 @@ export class AppointmentService {
 
     return appointment;
   }
+  async payAppointment(id: number): Promise<Appointment> {
+    const appointment = await this.getAppointment(id);
+    if (!appointment) throw new NotFoundException('Appointment not found');
+    appointment.payed = true;
+    return this.appointmentRepository.save(appointment);
+  }
 }
