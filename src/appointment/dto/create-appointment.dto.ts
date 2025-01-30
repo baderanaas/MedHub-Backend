@@ -13,6 +13,5 @@ export class CreateAppointmentDto {
   date: Date;
   @IsNumber()
   @IsNotEmpty()
-  session:number;
-
+  session: number;
 }

@@ -87,8 +87,10 @@ export class AppointmentService {
     availableSessionss: AvailableSessionsDto,
   ): Promise<number[]> {
     const { date, username } = availableSessionss;
-    const formattedDate = new Date(date);
+    const formattedDate = new Date(date).toISOString().split('T')[0];
     const allSessions = [1, 2, 3, 4, 5, 6, 7, 8];
+    console.log('formatted', formattedDate);
+    console.log(username);
     const appointments = await this.appointmentRepository.find({
       where: {
         doctor: {
@@ -97,7 +99,6 @@ export class AppointmentService {
         date: formattedDate,
       },
     });
-    console.log(appointments);
     console.log('appointments' + appointments);
     const reservedSessions = appointments.map(
       (appointment) => appointment.session,

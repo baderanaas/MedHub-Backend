@@ -8,7 +8,6 @@ export class Doctor extends User {
   @Column({ type: 'integer', unique: true, generated: 'increment' })
   matricule: number;
 
- 
   @Column({
     type: 'enum',
     enum: DoctorSpecialityEnum,
