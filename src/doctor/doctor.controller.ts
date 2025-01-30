@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { Doctor } from './entities/doctor.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
@@ -14,5 +14,9 @@ export class DoctorController {
   @Get('/:mat')
   async getDoctor(@Param('mat') matricule: number): Promise<Doctor> {
     return await this.doctorService.getDoctorByMat(matricule);
+  }
+  @Get('/one')
+  async getDoctorByName(@Query('name') name): Promise<Doctor[]> {
+    return this.doctorService.getDoctorByName(name);
   }
 }
