@@ -6,7 +6,7 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { differenceInYears } from 'date-fns';
-import { Appointment } from 'src/appointment/entity/appointment.entity';  
+import { Appointment } from 'src/appointment/entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
 
 @Injectable()
@@ -31,20 +31,21 @@ export class PatientService {
     }
     return patient;
   }
-  
-async getPatientsByDoctor(doctorId: number): Promise<Patient[]> {
-  const appointments = await this.appointmentRepository.find({
-    where: { 
-      doctor: { id: doctorId }, 
-      status: StatusEnum.COMPLETED 
-    },
-    relations: ['patient'],
-  });
 
-  const patients = appointments.map((appointment) => appointment.patient);
-  return [...new Map(patients.map(patient => [patient.id, patient])).values()];
-}
+  async getPatientsByDoctor(doctorId: number): Promise<Patient[]> {
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { id: doctorId },
+        status: StatusEnum.COMPLETED,
+      },
+      relations: ['patient'],
+    });
 
+    const patients = appointments.map((appointment) => appointment.patient);
+    return [
+      ...new Map(patients.map((patient) => [patient.id, patient])).values(),
+    ];
+  }
 
   async addPatient(patientDto: CreatePatientDto): Promise<Patient> {
     const patient = this.patientRepository.create({

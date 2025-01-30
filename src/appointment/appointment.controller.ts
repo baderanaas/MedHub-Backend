@@ -12,7 +12,6 @@ import {
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { StatusEnum } from 'src/common/enums/status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
@@ -26,7 +25,7 @@ export class AppointmentController {
     return await this.AppointmentService.getAppointments();
   }
 
-  @Get('/patient/:username')
+  @Get('patient/:username')
   async getPatientAppointments(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
@@ -42,8 +41,11 @@ export class AppointmentController {
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
-    return await this.AppointmentService.getPatientHistory(username);
+    return await this.AppointmentService.getPatientUpcomingAppointments(
+      username,
+    );
   }
+
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
@@ -68,27 +70,48 @@ export class AppointmentController {
     );
   }
 
-  @Put(':id')
-  async updateAppointment(
+  @Put('patient/:id/:username')
+  async updateAppointmentByPatient(
     @Param('id') id: number,
-
+    @Param('username') username: string,
     @Body() data: UpdateAppointmentDto,
   ): Promise<Appointment> {
-    return await this.AppointmentService.updateAppointment(id, data);
+    return await this.AppointmentService.updateAppointmentByPatient(
+      id,
+      data,
+      username,
+    );
   }
 
-  @Delete(':id')
-  async deleteAppointment(@Param('id') id: number) {
-    return await this.AppointmentService.deleteAppointment(id);
-  }
-
-  @Put('respond/:id')
-  async respondAppointment(
+  @Put('doctor/:id/:matricule')
+  async updateAppointmentByDoctor(
     @Param('id') id: number,
-    @Body() status: StatusEnum,
+    @Param('matricule') matricule: number,
+    @Body() data: UpdateAppointmentDto,
   ): Promise<Appointment> {
-    return await this.AppointmentService.respondAppointment(id, status);
+    return await this.AppointmentService.updateAppointmentByDoctor(
+      id,
+      data,
+      matricule,
+    );
   }
+
+  @Delete('patient/:id/:username')
+  async deleteAppointmentByPatient(
+    @Param('id') id: number,
+    @Param('username') username: string,
+  ) {
+    await this.AppointmentService.deleteAppointmentByPatient(id, username);
+  }
+
+  @Delete('doctor/:id/:matricule')
+  async deleteAppointmentByDoctor(
+    @Param('id') id: number,
+    @Param('matricule') matricule: number,
+  ) {
+    await this.AppointmentService.deleteAppointmentByDoctor(id, matricule);
+  }
+
   @Get('availableSessions')
   async getAvailableSessions(
     @Query('date') date: string,
@@ -103,7 +126,7 @@ export class AppointmentController {
   }
 
   @Put('complete/:id')
-  async completeAppointment(@Param('id') id: number): Promise<Appointment> {
-    return await this.AppointmentService.completedAppointment(id);
+  async completeAppointment(@Param('id') id: number) {
+    await this.AppointmentService.completedAppointment(id);
   }
 }

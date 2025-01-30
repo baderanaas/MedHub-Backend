@@ -1,6 +1,5 @@
 import { IsOptional } from 'class-validator';
 
-
 export class AddMedicationDto {
   @IsOptional()
   name: string;
@@ -12,5 +11,4 @@ export class AddMedicationDto {
   midday: boolean;
   @IsOptional()
   night: boolean;
-  
 }

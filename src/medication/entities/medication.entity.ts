@@ -1,8 +1,11 @@
+import { DoctorNote } from 'src/doctor-note/schema/doctor-note.schema';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,10 +23,11 @@ export class Medication {
   midday: boolean;
   @Column()
   night: boolean;
-  @Column({ default: false })
-  prescriptionRequired: boolean;
-  @Column({ nullable: true })
-  sideEffects: string;
+
+  @ManyToOne(() => DoctorNote, (docNote) => docNote.medications)
+  @JoinColumn({ name: 'docNote_id' })
+  docNote: DoctorNote;
+
   @CreateDateColumn()
   createdAt: Date;
   @UpdateDateColumn()
