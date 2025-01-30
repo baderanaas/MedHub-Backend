@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  // Post,
   Put,
   Query,
   UseGuards,
@@ -43,6 +42,13 @@ export class AppointmentController {
   }
 
   @Get('/patient/history/:username')
+  @Get('/patient/requests/:username')
+  async getPatientRequests(
+    @Param('username') userName: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getPatientRequests(userName);
+  }
+  @Get('/patient/hisory/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
@@ -54,17 +60,23 @@ export class AppointmentController {
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
   }
+  @Get('doctor')
+  async getDoctorAppointmentsbyName(
+    @Query('name') name,
+  ): Promise<Appointment[]> {
+    return this.AppointmentService.getByDoctorName(name);
+  }
 
   @Post(':patientUserName/:doctorId')
   async createAppointment(
     @Body() date: CreateAppointmentDto,
     @Param('patientUserName') patientUserName: string,
-    @Param('doctorId') doctorId: number,
+    @Param('doctorId') doctorMat: number,
   ): Promise<Appointment> {
     return await this.AppointmentService.addAppointment(
       date,
       patientUserName,
-      doctorId,
+      doctorMat,
     );
   }
 

@@ -13,6 +13,8 @@ import { DoctorModule } from './doctor/doctor.module';
 import { AuthModule } from './auth/auth.module';
 import { Patient } from './patient/entities/patient.entity';
 import { Doctor } from './doctor/entities/doctor.entity';
+import { MedicationModule } from './medication/medication.module';
+import { Medication } from './medication/entities/medication.entity';
 
 @Module({
   imports: [
@@ -28,7 +30,7 @@ import { Doctor } from './doctor/entities/doctor.entity';
         password: configService.get<string>('POSTGRES_PASS'),
         database: configService.get<string>('POSTGRES_DB'),
         synchronize: true,
-        entities: [Appointment, Patient, Doctor],
+        entities: [Appointment, Patient, Doctor, Medication],
         autoLoadEntities: true,
       }),
     }),
@@ -47,6 +49,7 @@ import { Doctor } from './doctor/entities/doctor.entity';
     PatientModule,
     DoctorModule,
     AuthModule,
+    MedicationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,9 +1,19 @@
 import { Appointment } from 'src/appointment/entity/appointment.entity';
+import { BloodType } from 'src/common/enums/blood-type.enum';
 import { User } from 'src/user/entity/user.entity';
-import { Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class Patient extends User {
+  @Column({ nullable: true })
+  height: number;
+
+  @Column({ nullable: true })
+  weight: number;
+
+  @Column({ nullable: true })
+  bloodType: BloodType;
+
   @OneToMany(() => Appointment, (appointment) => appointment.patient)
   appointments: Appointment[];
 }

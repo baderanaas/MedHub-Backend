@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { LessThan, MoreThan, Repository } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
@@ -57,9 +58,29 @@ export class AppointmentService {
   async getPatientAppointment(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
+
     const appointments = await this.appointmentRepository.find({
-      where: { patient: { username: username } },
+      where: {
+        patient: { username: username },
+        date: MoreThanOrEqual(new Date()),
+        status: StatusEnum.ACCEPTED,
+      },
     });
+
+    if (!appointments) throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+  async getPatientRequests(username: string): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+    console.log(patient);
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        patient: { username: username },
+        date: MoreThanOrEqual(new Date()),
+        status: StatusEnum.PENDING,
+      },
+    });
+
     console.log(appointments);
     if (!appointments) throw new NotFoundException('Appointment not found');
     return appointments;
@@ -95,7 +116,24 @@ export class AppointmentService {
     const doctor = await this.doctorService.getDoctorById(doctorId);
     return doctor.appointments;
   }
-
+  async getByDoctorName(name: string): Promise<Appointment[]> {
+    const doctors = await this.doctorService.getDoctorByName(name);
+    let allAppointments: Appointment[] = [];
+    for (const doctor of doctors) {
+      console.log('doctor in appointments: ', doctor);
+      const appointmets = await this.appointmentRepository.find({
+        where: {
+          doctor: {
+            matricule: doctor.matricule,
+          },
+        },
+        relations: ['doctor'],
+      });
+      console.log('appointments in appointment :', appointmets);
+      allAppointments = allAppointments.concat(appointmets);
+    }
+    return allAppointments;
+  }
   async addAppointment(
     data: CreateAppointmentDto,
     patientUserName: string,

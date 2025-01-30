@@ -32,7 +32,7 @@ export class PatientService {
     const patient = this.patientRepository.create({
       ...patientDto,
       role: Role.PATIENT,
-      age: differenceInYears(new Date(), patientDto.dateOfBirth),
+      age: differenceInYears(new Date(), new Date(patientDto.dateOfBirth)),
     });
     return this.patientRepository.save(patient);
   }
