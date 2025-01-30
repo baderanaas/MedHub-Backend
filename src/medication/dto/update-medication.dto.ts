@@ -6,29 +6,32 @@ import {
   IsISO8601,
 } from 'class-validator';
 
-export class AddMedicationDto {
+export class UpdateMedicationDto {
+  @IsOptional()
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsISO8601()
   startDate: Date;
 
   @IsOptional()
   @IsNumber()
-  frequency: number = -1;
+  frequency: number;
 
   @IsOptional()
   @IsBoolean()
-  morning: boolean = false;
+  morning: boolean;
 
   @IsOptional()
   @IsBoolean()
-  midday: boolean = false;
+  midday: boolean;
 
   @IsOptional()
   @IsBoolean()
-  night: boolean = false;
+  night: boolean;
 
+  @IsOptional()
   @IsNumber()
   appointmentId: number;
 }

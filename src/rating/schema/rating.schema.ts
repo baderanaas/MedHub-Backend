@@ -19,10 +19,10 @@ export class Rating extends Document {
   deletedAt: Date | null;
 
   @Prop({ required: true })
-  doctorId: number;
+  docMat: number;
 
   @Prop({ required: true })
-  patientId: number;
+  patientUsername: string;
 }
 
 export const RatingSchema = SchemaFactory.createForClass(Rating);

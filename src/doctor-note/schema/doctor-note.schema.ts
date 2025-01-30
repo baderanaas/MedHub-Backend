@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Medication } from 'src/medication/entities/medication.entity';
+import { Document } from 'mongoose';
 
 @Schema({ timestamps: { createdAt: true, updatedAt: true } })
 export class DoctorNote extends Document {
@@ -19,8 +18,8 @@ export class DoctorNote extends Document {
   @Prop({ required: true })
   appointmentId: number;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Medication' }] })
-  medications: Medication[];
+  @Prop({ type: [{ type: String }] })
+  medications: string[];
 }
 
 export const DoctorNoteSchema = SchemaFactory.createForClass(DoctorNote);
