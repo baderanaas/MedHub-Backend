@@ -21,7 +21,7 @@ export class Appointment {
   status: StatusEnum;
   @Column({ type: 'date', nullable: true })
   date: Date | string;
-  @Column()
+  @Column({ nullable: true })
   session: number;
   @Column({ default: false })
   payed: boolean;

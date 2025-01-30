@@ -1,4 +1,4 @@
-import { DoctorNote } from 'src/doctor-note/schema/doctor-note.schema';
+import { DoctorNote } from 'src/doctor-note/entities/doctor-note.entity';
 import {
   Column,
   CreateDateColumn,

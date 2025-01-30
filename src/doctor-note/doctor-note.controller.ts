@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe, // ✅ Import this
 } from '@nestjs/common';
 import { DoctorNoteService } from './doctor-note.service';
 import { CreateDoctorNoteDto } from './dto/create-doctor-note.dto';
@@ -18,14 +19,10 @@ export class DoctorNoteController {
   @Post()
   async create(
     @Body() createDoctorNoteDto: CreateDoctorNoteDto,
-    @Param('doctorId') doctorId: number,
-    @Param('patientId') patientId: number,
+    @Body('doctorId', ParseIntPipe) doctorId: number,
+    @Body('patientId', ParseIntPipe) patientId: number,
   ) {
-    return this.doctorNoteService.create(
-      createDoctorNoteDto,
-      doctorId,
-      patientId,
-    );
+    return this.doctorNoteService.create(createDoctorNoteDto, doctorId, patientId);
   }
 
   @Get()
@@ -34,20 +31,20 @@ export class DoctorNoteController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.doctorNoteService.findOne(id);
   }
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDoctorNoteDto: UpdateDoctorNoteDto,
   ) {
     return this.doctorNoteService.update(id, updateDoctorNoteDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id', ParseIntPipe) id: number) {
     return this.doctorNoteService.softRemove(id);
   }
 }

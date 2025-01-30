@@ -1,19 +1,18 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DoctorNote } from './entities/doctor-note.entity'; // ✅ Ensure correct import
 import { DoctorNoteService } from './doctor-note.service';
 import { DoctorNoteController } from './doctor-note.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { DoctorNote, DoctorNoteSchema } from './schema/doctor-note.schema';
-import { AppointmentModule } from 'src/appointment/appointment.module';
+import { Medication } from '../medication/entities/medication.entity';
+import { AppointmentModule } from '../appointment/appointment.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: DoctorNote.name, schema: DoctorNoteSchema },
-    ]),
-    forwardRef(() => AppointmentModule),
+    TypeOrmModule.forFeature([DoctorNote, Medication]), // ✅ Register entities correctly
+    AppointmentModule, // ✅ Ensure AppointmentModule is imported
   ],
   controllers: [DoctorNoteController],
   providers: [DoctorNoteService],
-  exports: [MongooseModule, DoctorNoteService],
+  exports: [TypeOrmModule],
 })
 export class DoctorNoteModule {}
