@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Appointment } from './appointment/entity/appointment.entity';
 import { AppointmentModule } from './appointment/appointment.module';
@@ -11,11 +12,15 @@ import { UserModule } from './user/user.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { AuthModule } from './auth/auth.module';
+import { DoctorNoteModule } from './doctor-note/doctor-note.module';
 import { Patient } from './patient/entities/patient.entity';
 import { Doctor } from './doctor/entities/doctor.entity';
+import { MedicationModule } from './medication/medication.module';
+import { Medication } from './medication/entities/medication.entity';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -28,7 +33,7 @@ import { Doctor } from './doctor/entities/doctor.entity';
         password: configService.get<string>('POSTGRES_PASS'),
         database: configService.get<string>('POSTGRES_DB'),
         synchronize: true,
-        entities: [Appointment, Patient, Doctor],
+        entities: [Appointment, Patient, Doctor, Medication],
         autoLoadEntities: true,
       }),
     }),
@@ -47,6 +52,8 @@ import { Doctor } from './doctor/entities/doctor.entity';
     PatientModule,
     DoctorModule,
     AuthModule,
+    DoctorNoteModule,
+    MedicationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
