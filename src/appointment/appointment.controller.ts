@@ -40,15 +40,14 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getUpcomingAppointments(username);
   }
-
-  @Get('/patient/history/:username')
   @Get('/patient/requests/:username')
   async getPatientRequests(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientRequests(userName);
   }
-  @Get('/patient/hisory/:username')
+
+  @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {

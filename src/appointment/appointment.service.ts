@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LessThan, MoreThanOrEqual, Repository } from 'typeorm';
-import { LessThan, MoreThan, Repository } from 'typeorm';
+import { LessThan, MoreThanOrEqual, Repository,MoreThan } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
