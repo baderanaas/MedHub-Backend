@@ -28,8 +28,8 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
-  async getPatientAppointments(username: string): Promise<Appointment[]> {
-  // working on it now
+  // async getPatientAppointments(username: string): Promise<Appointment[]> {
+  // }
   async getUpcomingAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
   
@@ -55,7 +55,7 @@ export class AppointmentService {
     return appointments;
   }
   
-  async getPatientAppointment(username: string): Promise<Appointment[]> {
+  async getPatientAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
 
@@ -122,7 +122,7 @@ export class AppointmentService {
     const appointments = await this.getPatientAppointments(username);
     return appointments.at(0);
   }
-  async getUpcomingAppointments(username: string): Promise<number> {
+  async getUpcomingAppointmentsNumber(username: string): Promise<number> {
     const appointments = await this.getPatientAppointments(username);
     return appointments.length;
   }
