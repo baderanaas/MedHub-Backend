@@ -51,6 +51,9 @@ export class AuthService {
     if (userDto.role === 'patient') {
       const newPatient = this.patientRepository.create({
         ...newUser,
+        height: userDto.height,
+        weight: userDto.weight,
+        bloodType: userDto.bloodType,
       });
       const patient = await this.patientRepository.save(newPatient);
       await this.userRepository.save(newUser);
