@@ -29,7 +29,7 @@ export class AppointmentController {
   async getPatientAppointments(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
-    return await this.AppointmentService.getPatientAppointment(userName);
+    return await this.AppointmentService.getPatientAppointments(userName);
   }
   @Get('/patient/requests/:username')
   async getPatientRequests(
@@ -45,7 +45,24 @@ export class AppointmentController {
       username,
     );
   }
-
+  @Get('/patient/next/:username')
+  async getPatientNextAppointment(
+    @Param('username') username: string,
+  ): Promise<Appointment> {
+    return await this.AppointmentService.getNextAppointment(username);
+  }
+  @Get('/patient/notpayed/:username')
+  async getPatientNotPayed(
+    @Param('username') username: string,
+  ): Promise<number> {
+    return await this.AppointmentService.getNotPayedAppointments(username);
+  }
+  @Get('/patient/upcoming/:username')
+  async getPatientUpcomingAppointments(
+    @Param('username') username: string,
+  ): Promise<number> {
+    return await this.AppointmentService.getUpcomingAppointments(username);
+  }
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);

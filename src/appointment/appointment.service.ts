@@ -32,7 +32,7 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
-  async getPatientAppointment(username: string): Promise<Appointment[]> {
+  async getPatientAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
 
@@ -42,9 +42,11 @@ export class AppointmentService {
         date: MoreThanOrEqual(new Date()),
         status: StatusEnum.ACCEPTED,
       },
+      order: { date: 'ASC' },
     });
 
-    if (!appointments) throw new NotFoundException('Appointment not found');
+    if (appointments.length === 0)
+      throw new NotFoundException('Appointment not found');
     return appointments;
   }
   async getPatientRequests(username: string): Promise<Appointment[]> {
@@ -106,6 +108,22 @@ export class AppointmentService {
   async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorById(doctorId);
     return doctor.appointments;
+  }
+  async getNextAppointment(username: string): Promise<Appointment> {
+    const appointments = await this.getPatientAppointments(username);
+    return appointments.at(0);
+  }
+  async getUpcomingAppointments(username: string): Promise<number> {
+    const appointments = await this.getPatientAppointments(username);
+    return appointments.length;
+  }
+  async getNotPayedAppointments(username: string): Promise<number> {
+    const appointments = await this.getPatientAppointments(username);
+    const notPayed = appointments.filter(
+      (appointment) => appointment.payed === false,
+    );
+
+    return notPayed.length;
   }
   async getByDoctorName(name: string): Promise<Appointment[]> {
     const doctors = await this.doctorService.getDoctorByName(name);
