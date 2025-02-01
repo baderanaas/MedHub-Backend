@@ -7,10 +7,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { StatusEnum } from 'src/common/enums/status.enum';
+import { Medication } from 'src/medication/entities/medication.entity';
 
 @Entity('appointments')
 export class Appointment {
@@ -33,6 +35,9 @@ export class Appointment {
   @ManyToOne(() => Doctor, (doctor) => doctor.appointments, { eager: true })
   @JoinColumn({ name: 'doctor_id' })
   doctor: Doctor;
+
+  @OneToMany(() => Medication, (medication) => medication.appointment)
+  medications: Medication[];
 
   @CreateDateColumn()
   createdAt: Date;

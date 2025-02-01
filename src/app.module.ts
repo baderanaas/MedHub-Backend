@@ -6,7 +6,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Appointment } from './appointment/entity/appointment.entity';
 import { AppointmentModule } from './appointment/appointment.module';
-
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { PatientModule } from './patient/patient.module';
@@ -47,7 +46,6 @@ import { Medication } from './medication/entities/medication.entity';
     }),
 
     AppointmentModule,
-
     UserModule,
     PatientModule,
     DoctorModule,
