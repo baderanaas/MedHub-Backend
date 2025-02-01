@@ -12,11 +12,12 @@ import {
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { StatusEnum } from 'src/common/enums/status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @Controller('/appointment')
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
 
@@ -25,11 +26,25 @@ export class AppointmentController {
     return await this.AppointmentService.getAppointments();
   }
 
-  @Get('patient/:username')
+  @Get('/patient/:username')
   async getPatientAppointments(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
-    return await this.AppointmentService.getPatientAppointment(userName);
+    return await this.AppointmentService.getPatientAppointments(userName);
+  }
+
+  //working here
+  @Get('/patient/upcoming/:username')
+  async getUpcomingAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getUpcomingAppointments(username);
+  }
+  @Get('/patient/upcomingNumber/:username')
+  async getUpcomingAppointmentsNumber(
+    @Param('username') username: string,
+  ): Promise<number> {
+    return await this.AppointmentService.getUpcomingAppointmentsNumber(username);
   }
   @Get('/patient/requests/:username')
   async getPatientRequests(
@@ -37,15 +52,28 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientRequests(userName);
   }
-  @Get('/patient/hisory/:username')
+
+  @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
-    return await this.AppointmentService.getPatientUpcomingAppointments(
-      username,
-    );
+    return await this.AppointmentService.getPatientHistory(username);
   }
+  @Get('/patient/next/:username')
+  async getPatientNextAppointment(
+    @Param('username') username: string,
+  ): Promise<Appointment> {
+    return await this.AppointmentService.getNextAppointment(username);
+  }
+  @Get('/patient/notpayed/:username')
+  async getPatientNotPayed(
+    @Param('username') username: string,
+  ): Promise<number> {
+    return await this.AppointmentService.getNotPayedAppointments(username);
+  }
+  
 
+  //till here
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
@@ -70,48 +98,27 @@ export class AppointmentController {
     );
   }
 
-  @Put('patient/:id/:username')
-  async updateAppointmentByPatient(
+  @Put(':id')
+  async updateAppointment(
     @Param('id') id: number,
-    @Param('username') username: string,
+
     @Body() data: UpdateAppointmentDto,
   ): Promise<Appointment> {
-    return await this.AppointmentService.updateAppointmentByPatient(
-      id,
-      data,
-      username,
-    );
+    return await this.AppointmentService.updateAppointment(id, data);
   }
 
-  @Put('doctor/:id/:matricule')
-  async updateAppointmentByDoctor(
+  @Delete(':id')
+  async deleteAppointment(@Param('id') id: number) {
+    return await this.AppointmentService.deleteAppointment(id);
+  }
+
+  @Put('respond/:id')
+  async respondAppointment(
     @Param('id') id: number,
-    @Param('matricule') matricule: number,
-    @Body() data: UpdateAppointmentDto,
+    @Body() status: StatusEnum,
   ): Promise<Appointment> {
-    return await this.AppointmentService.updateAppointmentByDoctor(
-      id,
-      data,
-      matricule,
-    );
+    return await this.AppointmentService.respondAppointment(id, status);
   }
-
-  @Delete('patient/:id/:username')
-  async deleteAppointmentByPatient(
-    @Param('id') id: number,
-    @Param('username') username: string,
-  ) {
-    await this.AppointmentService.deleteAppointmentByPatient(id, username);
-  }
-
-  @Delete('doctor/:id/:matricule')
-  async deleteAppointmentByDoctor(
-    @Param('id') id: number,
-    @Param('matricule') matricule: number,
-  ) {
-    await this.AppointmentService.deleteAppointmentByDoctor(id, matricule);
-  }
-
   @Get('availableSessions')
   async getAvailableSessions(
     @Query('date') date: string,
@@ -126,7 +133,7 @@ export class AppointmentController {
   }
 
   @Put('complete/:id')
-  async completeAppointment(@Param('id') id: number) {
-    await this.AppointmentService.completedAppointment(id);
+  async completeAppointment(@Param('id') id: number): Promise<Appointment> {
+    return await this.AppointmentService.completedAppointment(id);
   }
 }
