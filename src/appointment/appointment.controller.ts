@@ -74,6 +74,12 @@ export class AppointmentController {
     return this.AppointmentService.getByDoctorName(name);
   }
 
+  @Get('doctor/completed/:id')
+async getDoctorCompletedAppointments(@Param('id') id: number): Promise<Appointment[]> {
+  return await this.AppointmentService.getDoctorCompletedAppointments(id);
+}
+
+
   @Post(':patientUserName/:doctorId')
   async createAppointment(
     @Body() date: CreateAppointmentDto,

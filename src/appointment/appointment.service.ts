@@ -125,6 +125,16 @@ export class AppointmentService {
 
     return notPayed.length;
   }
+
+  async getDoctorCompletedAppointments(id: number): Promise<Appointment[]> {
+    return await this.appointmentRepository.find({
+      where: { doctor: { id: id }, status: StatusEnum.COMPLETED },
+      relations: ['doctor', 'patient'],
+      order: { date: 'DESC' },
+    });
+  }
+  
+  
   async getByDoctorName(name: string): Promise<Appointment[]> {
     const doctors = await this.doctorService.getDoctorByName(name);
     let allAppointments: Appointment[] = [];

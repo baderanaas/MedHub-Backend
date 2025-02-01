@@ -23,6 +23,8 @@ export class Medication {
   midday: boolean;
   @Column()
   night: boolean;
+  @Column()
+  dose:string;
 
   @ManyToOne(() => DoctorNote, (docNote) => docNote.medications)
   @JoinColumn({ name: 'docNote_id' })
