@@ -127,14 +127,15 @@ export class AppointmentService {
 
   async getUpcomingDoctorAppointments(doctorId: number): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorById(doctorId);
-  
+    console.log(doctor);
     if (!doctor) {
       throw new NotFoundException(`Doctor with ID "${doctorId}" not found`);
     }
-  
+    const today = new Date();
     const appointments = await this.appointmentRepository.find({
       where: {
         doctor: { id: doctorId },
+        date: MoreThanOrEqual(today),
         status: StatusEnum.ACCEPTED,
       },
       relations: ['patient'], // Inclure les informations du patient
