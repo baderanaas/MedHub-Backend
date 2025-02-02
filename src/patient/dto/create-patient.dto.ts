@@ -4,13 +4,9 @@ import {
   IsDateString,
   IsEmail,
   Length,
-  ValidateIf,
   Matches,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { differenceInYears } from 'date-fns';
-import { ValidateAgeConstraint } from 'src/common/validators/validate-age.constraint';
-import { Validate } from 'class-validator';
 
 export class CreatePatientDto {
   @IsNotEmpty({ message: 'Lastname is required' })
@@ -42,13 +38,5 @@ export class CreatePatientDto {
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   email: string;
-
-  @ValidateIf((o) => o.dateOfBirth)
-  @IsDateString({}, { message: 'Date of Birth must be a valid date' })
-  @Validate(ValidateAgeConstraint, [{ minAge: 25, maxAge: 80 }])
-  validateAge() {
-    const currentDate = new Date();
-    const age = differenceInYears(currentDate, this.dateOfBirth);
-    return age >= 25 && age <= 80;
-  }
+  
 }
