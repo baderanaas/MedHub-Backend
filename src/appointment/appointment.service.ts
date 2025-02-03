@@ -72,6 +72,8 @@ export class AppointmentService {
       throw new NotFoundException('Appointment not found');
     return appointments;
   }
+
+
   async getPatientRequests(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
@@ -175,6 +177,7 @@ export class AppointmentService {
   ): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
     this.appointmentRepository.merge(appointment, data);
+    console.log('dataaaaa',data)
     return this.appointmentRepository.save(appointment);
   }
 
@@ -241,23 +244,23 @@ export class AppointmentService {
 
 
 
-  async getDoctorUpcomingAppointments(username:string):Promise<Appointment[]> {
-    const doctor = await this.doctorService.getDoctorByUserName(username);
-    console.log(doctor);
+  // async getDoctorUpcomingAppointments(username:string):Promise<Appointment[]> {
+  //   const doctor = await this.doctorService.getDoctorByUserName(username);
+  //   console.log(doctor);
 
-    const appointments = await this.appointmentRepository.find({
-      where: {
-        doctor: { username: username },
-        date: MoreThanOrEqual(new Date()),
-        status: StatusEnum.ACCEPTED,
-      },
-      order: { date: 'ASC' },
-    });
+  //   const appointments = await this.appointmentRepository.find({
+  //     where: {
+  //       doctor: { username: username },
+  //       date: MoreThanOrEqual(new Date()),
+  //       status: StatusEnum.ACCEPTED,
+  //     },
+  //     order: { date: 'ASC' },
+  //   });
 
-    if (appointments.length === 0)
-      throw new NotFoundException('Appointment not found');
-    return appointments;
-  }
+  //   if (appointments.length === 0)
+  //     throw new NotFoundException('Appointment not found');
+  //   return appointments;
+  // }
 
   async getDoctorTodayAppointments(username: string): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorByUserName(username);
@@ -281,7 +284,29 @@ export class AppointmentService {
     });
   
     if (appointments.length === 0)
-      throw new NotFoundException('No appointments found for today');
+      console.log("no app")
     return appointments;
   }
+
+
+  async getDoctorRequestedAppointments(username:string):Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByUserName(username);
+    console.log(doctor);
+
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { username: username },
+        date: MoreThanOrEqual(new Date()),
+        status: StatusEnum.PENDING,
+      },
+      order: { date: 'ASC' },
+    });
+
+    if (appointments.length === 0)
+      throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
+
+
 }

@@ -44,7 +44,9 @@ export class AppointmentController {
   async getUpcomingAppointmentsNumber(
     @Param('username') username: string,
   ): Promise<number> {
-    return await this.AppointmentService.getUpcomingAppointmentsNumber(username);
+    return await this.AppointmentService.getUpcomingAppointmentsNumber(
+      username,
+    );
   }
   @Get('/patient/requests/:username')
   async getPatientRequests(
@@ -71,10 +73,8 @@ export class AppointmentController {
   ): Promise<number> {
     return await this.AppointmentService.getNotPayedAppointments(username);
   }
-  
 
   //till here
-
 
   @Get('/doctor/upcoming/:username')
   async getDoctorUpcomingAppointments(
@@ -84,13 +84,21 @@ export class AppointmentController {
   }
 
   @Get('/doctor/today/:username')
-async getDoctorTodayAppointments(
-  @Param('username') username: string,
-): Promise<Appointment[]> {
-  console.log("hellllllllllooooo");
-  return await this.AppointmentService.getDoctorTodayAppointments(username);
-}
+  async getDoctorTodayAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorTodayAppointments(username);
+  }
 
+
+  @Get('/doctor/requested/:username')
+  async getDoctorRequestedAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    //console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorRequestedAppointments(username);
+  }
 
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
