@@ -80,7 +80,7 @@ export class AppointmentController {
   async getDoctorUpcomingAppointments(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
-    return await this.AppointmentService.getDoctorTodayAppointments(username);
+    return await this.AppointmentService.getDoctorUpcomingAppointments(username);
   }
 
   @Get('/doctor/today/:username')
