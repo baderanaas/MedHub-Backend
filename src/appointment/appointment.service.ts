@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LessThan, MoreThanOrEqual, Repository,MoreThan } from 'typeorm';
+import { LessThan, MoreThanOrEqual, Repository,MoreThan, In } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -134,24 +134,24 @@ export class AppointmentService {
 
     return notPayed.length;
   }
-  async getByDoctorName(name: string): Promise<Appointment[]> {
+  async getAppointmentsByDoctorName(name: string): Promise<Appointment[]> {
+    // Find doctors with the given name
     const doctors = await this.doctorService.getDoctorByName(name);
-    let allAppointments: Appointment[] = [];
-    for (const doctor of doctors) {
-      console.log('doctor in appointments: ', doctor);
-      const appointmets = await this.appointmentRepository.find({
-        where: {
-          doctor: {
-            matricule: doctor.matricule,
-          },
-        },
-        relations: ['doctor'],
-      });
-      console.log('appointments in appointment :', appointmets);
-      allAppointments = allAppointments.concat(appointmets);
+
+    if (!doctors.length) {
+        throw new NotFoundException(`No doctor found with name: ${name}`);
     }
-    return allAppointments;
-  }
+
+    // Fetch appointments for all doctors matching the name
+    return await this.appointmentRepository.find({
+        where: {
+            doctor: In(doctors.map(doc => doc.id)), // Fetch by doctor IDs
+        },
+        relations: ['patient', 'doctor'],
+    });
+}
+
+
   async addAppointment(
     data: CreateAppointmentDto,
     patientUserName: string,
@@ -237,4 +237,17 @@ export class AppointmentService {
 
     return appointment;
   }
+
+  //forcit l complete bch ntseti
+  async completeAppointment(id: number): Promise<Appointment> {
+    const appointment = await this.getAppointment(id);
+    if (!appointment) throw new NotFoundException('Appointment not found');
+
+    // Mark the appointment as completed and payed
+    appointment.status = StatusEnum.COMPLETED;
+    appointment.payed = true;
+
+    return await this.appointmentRepository.save(appointment);
+}
+
 }

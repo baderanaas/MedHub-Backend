@@ -74,15 +74,14 @@ export class AppointmentController {
   
 
   //till here
+  @Get('doctor')
+  async getAppointmentsByDoctorName(@Query('name') name: string): Promise<Appointment[]> {
+    return await this.AppointmentService.getAppointmentsByDoctorName(name);
+  }
+
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
-  }
-  @Get('doctor')
-  async getDoctorAppointmentsbyName(
-    @Query('name') name,
-  ): Promise<Appointment[]> {
-    return this.AppointmentService.getByDoctorName(name);
   }
 
   @Post(':patientUserName/:doctorId')
@@ -132,8 +131,14 @@ export class AppointmentController {
     );
   }
 
-  @Put('complete/:id')
-  async completeAppointment(@Param('id') id: number): Promise<Appointment> {
-    return await this.AppointmentService.completedAppointment(id);
-  }
+ // @Put('complete/:id')
+ // async completeAppointment(@Param('id') id: number): Promise<Appointment> {
+  //  return await this.AppointmentService.completedAppointment(id);
+ // }
+ //forcit el complete and it works
+ @Put('complete/:id')
+ async completeAppointment(@Param('id') id: number): Promise<Appointment> {
+     return await this.AppointmentService.completeAppointment(id);
+ }
+ 
 }
