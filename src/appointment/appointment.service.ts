@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LessThan, MoreThanOrEqual, Repository,MoreThan } from 'typeorm';
+import { LessThan, MoreThanOrEqual, Repository,MoreThan, Between } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -236,5 +236,52 @@ export class AppointmentService {
     }
 
     return appointment;
+  }
+
+
+
+
+  async getDoctorUpcomingAppointments(username:string):Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByUserName(username);
+    console.log(doctor);
+
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { username: username },
+        date: MoreThanOrEqual(new Date()),
+        status: StatusEnum.ACCEPTED,
+      },
+      order: { date: 'ASC' },
+    });
+
+    if (appointments.length === 0)
+      throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
+  async getDoctorTodayAppointments(username: string): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByUserName(username);
+    console.log(doctor);
+  
+    // Get today's date range
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0); // Start of the day (00:00:00.000)
+  
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999); // End of the day (23:59:59.999)
+  
+    // Fetch appointments for today
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { username: username },
+        date: Between(todayStart, todayEnd), // Filter by today's date range
+        status: StatusEnum.ACCEPTED,
+      },
+      order: { date: 'ASC' },
+    });
+  
+    if (appointments.length === 0)
+      throw new NotFoundException('No appointments found for today');
+    return appointments;
   }
 }

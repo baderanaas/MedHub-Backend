@@ -74,6 +74,24 @@ export class AppointmentController {
   
 
   //till here
+
+
+  @Get('/doctor/upcoming/:username')
+  async getDoctorUpcomingAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getDoctorTodayAppointments(username);
+  }
+
+  @Get('/doctor/today/:username')
+async getDoctorTodayAppointments(
+  @Param('username') username: string,
+): Promise<Appointment[]> {
+  console.log("hellllllllllooooo");
+  return await this.AppointmentService.getDoctorTodayAppointments(username);
+}
+
+
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
