@@ -11,6 +11,7 @@ import {
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
+import { Patient } from './entities/patient.entity';
 
 @Controller('patient')
 @UseGuards(JwtAuthGuard)
@@ -25,6 +26,11 @@ export class PatientController {
   @Get(':username')
   async getPatient(@Param('username') username: string) {
     return await this.patientService.getPatientByUserName(username);
+  }
+
+  @Get('completed/doctor/:doctorUsername')
+  async getPatientsByDoctorUsername(@Param('doctorUsername') doctorUsername: string): Promise<Patient[]> {
+    return this.patientService.getPatientsByDoctorUsername(doctorUsername);
   }
 
   @Post()

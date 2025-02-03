@@ -7,16 +7,16 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
+ // UseGuards,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
+//import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @Controller('/appointment')
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
 
@@ -25,7 +25,7 @@ export class AppointmentController {
     return await this.AppointmentService.getAppointments();
   }
 
-  @Get('patient/:username')
+  @Get('/patient/:username')
   async getPatientAppointments(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
@@ -37,12 +37,12 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientRequests(userName);
   }
-  @Get('/patient/hisory/:username')
+  @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
-    return await this.AppointmentService.getPatientUpcomingAppointments(
-      username,
+    return await this.AppointmentService.getPatientHistory(
+      username
     );
   }
   @Get('/patient/next/:username')
@@ -74,10 +74,18 @@ export class AppointmentController {
     return this.AppointmentService.getByDoctorName(name);
   }
 
-  @Get('doctor/completed/:id')
-async getDoctorCompletedAppointments(@Param('id') id: number): Promise<Appointment[]> {
-  return await this.AppointmentService.getDoctorCompletedAppointments(id);
-}
+  @Get('completedappointments/doctor/:doctorUsername/:patientUsername')
+  async getCompletedAppointmentsByDoctorAndPatient(
+    @Param('doctorUsername') doctorUsername: string,
+    @Param('patientUsername') patientUsername: string
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getCompletedAppointmentsByDoctorAndPatient(
+      doctorUsername,
+      patientUsername
+    );
+  }
+
+
 
 
   @Post(':patientUserName/:doctorId')

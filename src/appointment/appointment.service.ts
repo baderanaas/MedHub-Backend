@@ -8,6 +8,8 @@ import { DoctorService } from 'src/doctor/doctor.service';
 import { PatientService } from 'src/patient/patient.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AvailableSessionsDto } from './dto/availableSessionsDto';
+import { Doctor } from 'src/doctor/entities/doctor.entity';
+import { Patient } from 'src/patient/entities/patient.entity';
 
 @Injectable()
 export class AppointmentService {
@@ -16,6 +18,10 @@ export class AppointmentService {
     private readonly appointmentRepository: Repository<Appointment>,
     private readonly doctorService: DoctorService,
     private readonly patientService: PatientService,
+    @InjectRepository(Doctor)
+    private readonly doctorRepository: Repository<Doctor>,
+    @InjectRepository(Patient)
+    private readonly patientRepository: Repository<Patient>,
   ) {}
 
   async getAppointments(): Promise<Appointment[]> {
@@ -46,7 +52,7 @@ export class AppointmentService {
     });
 
     if (appointments.length === 0)
-      throw new NotFoundException('Appointment not found');
+      console.log('Appointment not found for this patient');
     return appointments;
   }
   async getPatientRequests(username: string): Promise<Appointment[]> {
@@ -65,29 +71,25 @@ export class AppointmentService {
     return appointments;
   }
 
-  async getPatientAppointmentsHistory(
-    username: string,
-    query: { status?: StatusEnum; date?: Date } = {},
-  ): Promise<Appointment[]> {
+  async getPatientHistory(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereClause: any = { patient: patient };
-
-    if (query.status) {
-      whereClause.status = query.status;
+  
+    if (!patient) {
+      throw new NotFoundException(`Patient with username "${username}" not found`);
     }
-
-    if (query.date) {
-      whereClause.date = query.date;
-    }
-
+  
     const appointments = await this.appointmentRepository.find({
-      where: whereClause,
-      order: { date: 'DESC' },
+      where: {
+        patient: { username: username },
+        status: StatusEnum.ACCEPTED, 
+        date: LessThan(new Date()),
+      },
     });
-
-    if (!appointments.length)
-      throw new NotFoundException('Appointment not found');
+  
+    if (!appointments.length) {
+      throw new NotFoundException('No  past appointments found');
+    }
+  
     return appointments;
   }
 
@@ -126,11 +128,38 @@ export class AppointmentService {
     return notPayed.length;
   }
 
-  async getDoctorCompletedAppointments(id: number): Promise<Appointment[]> {
+
+  
+  async getCompletedAppointmentsByDoctorAndPatient(
+    doctorUsername: string,
+    patientUsername: string
+  ): Promise<Appointment[]> {
+    // Find the doctor by username
+    const doctor = await this.doctorRepository.findOne({
+      where: { username: doctorUsername },
+    });
+  
+    if (!doctor) {
+      throw new NotFoundException('Doctor with username ${doctorUsername} not found');
+    }
+  
+    // Find the patient by username
+    const patient = await this.patientRepository.findOne({
+      where: { username: patientUsername },
+    });
+  
+    if (!patient) {
+      throw new NotFoundException('Patient with username ${patientUsername} not found');
+    }
+  
+    // Fetch only completed appointments for the specific doctor and patient
     return await this.appointmentRepository.find({
-      where: { doctor: { id: id }, status: StatusEnum.COMPLETED },
-      relations: ['doctor', 'patient'],
-      order: { date: 'DESC' },
+      where: {
+        doctor: { id: doctor.id },
+        patient: { id: patient.id },
+        status: StatusEnum.COMPLETED, // Fetch only completed appointments
+      },
+      relations: ['patient', 'doctor'],
     });
   }
   

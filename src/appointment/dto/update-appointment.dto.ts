@@ -4,7 +4,6 @@ import {
   IsOptional,
   IsISO8601,
   IsEnum,
-  IsInt,
   ValidateIf,
 } from 'class-validator';
 import { IsFutureDate } from 'src/common/validators/is-future-date.validator';

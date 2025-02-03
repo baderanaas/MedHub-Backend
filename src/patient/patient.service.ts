@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Patient } from './entities/patient.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePatientDto } from './dto/create-patient.dto';
@@ -8,6 +8,7 @@ import { UpdatePatientDto } from './dto/update-patient.dto';
 import { differenceInYears } from 'date-fns';
 import { Appointment } from 'src/appointment/entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
+import { Doctor } from 'src/doctor/entities/doctor.entity';
 
 @Injectable()
 export class PatientService {
@@ -16,6 +17,8 @@ export class PatientService {
     private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
+    @InjectRepository(Doctor)
+    private readonly doctorRepository: Repository<Doctor>,
   ) {}
 
   async getPatients(): Promise<Patient[]> {
@@ -55,6 +58,31 @@ export class PatientService {
     });
     return this.patientRepository.save(patient);
   }
+
+  async getPatientsByDoctorUsername(doctorUsername: string): Promise<Patient[]> {
+    // Find the doctor entity by username
+    const doctor = await this.doctorRepository.findOne({
+      where: { username: doctorUsername },
+    });
+  
+    if (!doctor) {
+      throw new NotFoundException('Doctor with username ${doctorUsername} not found');
+    }
+  
+    // Fetch appointments of this doctor with ACCEPTED and COMPLETED statuses
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { id: doctor.id }, // Now using the doctor's ID after fetching it via username
+        status: In([StatusEnum.COMPLETED, StatusEnum.ACCEPTED]),
+      },
+      relations: ['patient'],
+    });
+  
+    // Extract unique patients
+    const patients = appointments.map((appointment) => appointment.patient);
+    return [...new Map(patients.map((patient) => [patient.id, patient])).values()];
+  }
+  
 
   async updatePatient(
     patientDto: UpdatePatientDto,
