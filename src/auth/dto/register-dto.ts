@@ -61,4 +61,7 @@ export class RegisterDto {
   @IsOptional()
   @IsEnum(BloodType)
   bloodType: BloodType;
+  
+  @IsOptional()
+  location: string;
 }

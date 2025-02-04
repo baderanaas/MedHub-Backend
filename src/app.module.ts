@@ -16,6 +16,7 @@ import { Patient } from './patient/entities/patient.entity';
 import { Doctor } from './doctor/entities/doctor.entity';
 import { MedicationModule } from './medication/medication.module';
 import { Medication } from './medication/entities/medication.entity';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { Medication } from './medication/entities/medication.entity';
     AuthModule,
     DoctorNoteModule,
     MedicationModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

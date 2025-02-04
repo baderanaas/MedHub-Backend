@@ -67,4 +67,6 @@ export class CreateDoctorDto {
     const age = differenceInYears(currentDate, this.dateOfBirth);
     return age >= 25 && age <= 80;
   }
+
+
 }
