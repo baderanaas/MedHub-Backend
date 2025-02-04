@@ -72,6 +72,40 @@ export class AppointmentService {
     return appointments;
   }
 
+
+  async getAppointmentsNextWeek(username: string): Promise<Appointment[]> {
+    const patient = await this.patientService.getPatientByUserName(username);
+  
+    if (!patient) {
+      throw new NotFoundException(
+        `Patient with username "${username}" not found`,
+      );
+    }
+  
+    const currentDate = new Date();
+    const nextWeekStart = new Date(currentDate);
+    nextWeekStart.setDate(currentDate.getDate() ); // Set the date for the next week's start
+  
+    const nextWeekEnd = new Date(nextWeekStart);
+    nextWeekEnd.setDate(nextWeekStart.getDate() + 7); // Set the end of the next week
+  
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        patient: { username: username },
+        status: StatusEnum.ACCEPTED,
+        date: Between(nextWeekStart, nextWeekEnd),
+      },
+      order: { date: 'ASC' },
+    });
+  
+    if (!appointments.length) {
+      throw new NotFoundException('No appointments found for next week');
+    }
+  
+    return appointments;
+  }
+  
+
   async getPatientAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);

@@ -40,6 +40,14 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getUpcomingAppointments(username);
   }
+
+  @Get('/patient/next-week/:username')
+  async getAppointmentsNextWeek(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getAppointmentsNextWeek(username);
+  }
+
   @Get('/patient/upcomingNumber/:username')
   async getUpcomingAppointmentsNumber(
     @Param('username') username: string,
