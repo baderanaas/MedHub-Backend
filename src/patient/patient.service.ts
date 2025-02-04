@@ -35,30 +35,6 @@ export class PatientService {
     return patient;
   }
 
-  async getPatientsByDoctorUsername(doctorUsername: string): Promise<Patient[]> {
-    // Find the doctor entity by username
-    const doctor = await this.doctorRepository.findOne({
-      where: { username: doctorUsername },
-    });
-  
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with username ${doctorUsername} not found`);
-    }
-  
-    // Fetch appointments of this doctor with ACCEPTED and COMPLETED statuses
-    const appointments = await this.appointmentRepository.find({
-      where: {
-        doctor: { id: doctor.id }, // Now using the doctor's ID after fetching it via username
-        status: In([StatusEnum.COMPLETED, StatusEnum.ACCEPTED]),
-      },
-      relations: ['patient'],
-    });
-  
-    // Extract unique patients
-    const patients = appointments.map((appointment) => appointment.patient);
-    return [...new Map(patients.map((patient) => [patient.id, patient])).values()];
-  }
-  
 
 
   async addPatient(patientDto: CreatePatientDto): Promise<Patient> {

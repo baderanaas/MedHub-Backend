@@ -6,6 +6,7 @@ import {
   MoreThan,
   Between,
   LessThanOrEqual,
+  In,
 } from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
