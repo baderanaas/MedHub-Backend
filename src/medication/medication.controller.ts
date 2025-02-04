@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { MedicationService } from './medication.service';
 import { Medication } from './entities/medication.entity';
 import { AddMedicationDto } from './dto/add-medication.dto';
@@ -6,6 +6,10 @@ import { AddMedicationDto } from './dto/add-medication.dto';
 @Controller('medication')
 export class MedicationController {
   constructor(private readonly medicationService: MedicationService) {}
+  @Get('patient/:username')
+  async getPatientMedications(@Param('username') username: string) {
+    return this.medicationService.getPatientMedications(username);
+  }
   @Get()
   async getMedications(): Promise<Medication[]> {
     return await this.medicationService.getMedications();

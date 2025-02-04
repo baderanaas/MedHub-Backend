@@ -10,8 +10,17 @@ export class MedicationService {
     @InjectRepository(Medication)
     private readonly medicationRepository: Repository<Medication>,
   ) {}
-  getMedications(): Promise<Medication[]> {
-    return this.medicationRepository.find();
+  async getMedications(): Promise<Medication[]> {
+    return await this.medicationRepository.find();
+  }
+  async getPatientMedications(username: string):Promise<Medication[]> {
+    return await this.medicationRepository.find({
+      where: {
+        patient: {
+          username: username,
+        },
+      },
+    });
   }
   async addMedication(medicationDto: AddMedicationDto): Promise<Medication> {
     const medication = await this.medicationRepository.create(medicationDto);

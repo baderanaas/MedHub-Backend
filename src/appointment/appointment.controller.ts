@@ -38,7 +38,7 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientRequests(userName);
   }
-  @Get('/patient/hisory/:username')
+  @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
   ): Promise<Appointment[]> {
