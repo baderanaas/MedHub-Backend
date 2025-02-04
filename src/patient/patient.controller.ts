@@ -34,7 +34,7 @@ export class PatientController {
     return await this.patientService.addPatient(patientDto);
   }
 
-  @Get('doctor/username/:doctorUsername/patients')
+  @Get('doctor/username/:doctorUsername')
   async getPatientsByDoctorUsername(@Param('doctorUsername') doctorUsername: string): Promise<Patient[]> {
     return this.patientService.getPatientsByDoctorUsername(doctorUsername);
   }
