@@ -11,7 +11,7 @@ import { UserModule } from './user/user.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { AuthModule } from './auth/auth.module';
-import { DoctorNoteModule } from './doctor-note/doctor-note.module';
+// import { DoctorNoteModule } from './doctor-note/doctor-note.module';
 import { Patient } from './patient/entities/patient.entity';
 import { Doctor } from './doctor/entities/doctor.entity';
 import { MedicationModule } from './medication/medication.module';
@@ -37,20 +37,20 @@ import { Medication } from './medication/entities/medication.entity';
       }),
     }),
 
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-      }),
-    }),
+    // MongooseModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     uri: configService.get<string>('MONGODB_URI'),
+    //   }),
+    // }),
 
     AppointmentModule,
     UserModule,
     PatientModule,
     DoctorModule,
     AuthModule,
-    DoctorNoteModule,
+    // DoctorNoteModule,
     MedicationModule,
   ],
   controllers: [AppController],

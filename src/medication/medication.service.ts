@@ -59,7 +59,7 @@ export class MedicationService {
   async getMedicationsByPatient(username: string): Promise<Medication[]> {
     try {
       const appointments =
-        await this.appointmentService.getPatientAppointment(username);
+        await this.appointmentService.getPatientAppointments(username);
       if (appointments.length === 0) {
         throw new BadRequestException('No appointments found for the patient');
       }

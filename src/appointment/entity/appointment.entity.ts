@@ -28,7 +28,7 @@ export class Appointment {
   @Column({ default: false })
   payed: boolean;
 
-  @ManyToOne(() => Patient, (patient) => patient.appointments)
+  @ManyToOne(() => Patient, (patient) => patient.appointments, { eager: true })
   @JoinColumn({ name: 'patient_id' })
   patient: Patient;
 
