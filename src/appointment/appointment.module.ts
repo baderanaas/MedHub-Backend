@@ -16,6 +16,6 @@ import { Patient } from 'src/patient/entities/patient.entity';
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService],
-  exports: [TypeOrmModule,AppointmentService],
+  exports: [TypeOrmModule, AppointmentService],
 })
 export class AppointmentModule {}

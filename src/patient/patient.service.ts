@@ -6,19 +6,19 @@ import { CreatePatientDto } from './dto/create-patient.dto';
 import { Role } from 'src/common/enums/role.enum';
 import { UpdatePatientDto } from './dto/update-patient.dto';
 import { differenceInYears } from 'date-fns';
+import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Appointment } from 'src/appointment/entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
-import { Doctor } from 'src/doctor/entities/doctor.entity';
 
 @Injectable()
 export class PatientService {
   constructor(
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
+    @InjectRepository(Doctor)
+    private readonly doctorRepository: Repository<Doctor>,
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
-    @InjectRepository (Doctor)
-    private readonly doctorRepository: Repository<Doctor>,
   ) {}
 
   async getPatients(): Promise<Patient[]> {
@@ -65,7 +65,7 @@ export class PatientService {
     const patient = this.patientRepository.create({
       ...patientDto,
       role: Role.PATIENT,
-      age: differenceInYears(new Date(), patientDto.dateOfBirth),
+      age: differenceInYears(new Date(), new Date(patientDto.dateOfBirth)),
     });
     return this.patientRepository.save(patient);
   }
@@ -90,5 +90,35 @@ export class PatientService {
       throw new NotFoundException('Patient not found');
     }
     await this.patientRepository.softDelete(patient.id);
+  }
+
+  async getPatientsByDoctorUsername(
+    doctorUsername: string,
+  ): Promise<Patient[]> {
+    // Find the doctor entity by username
+    const doctor = await this.doctorRepository.findOne({
+      where: { username: doctorUsername },
+    });
+
+    if (!doctor) {
+      throw new NotFoundException(
+        'Doctor with username ${doctorUsername} not found',
+      );
+    }
+
+    // Fetch appointments of this doctor with ACCEPTED and COMPLETED statuses
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { id: doctor.id }, // Now using the doctor's ID after fetching it via username
+        status: In([StatusEnum.ACCEPTED]),
+      },
+      relations: ['patient'],
+    });
+
+    // Extract unique patients
+    const patients = appointments.map((appointment) => appointment.patient);
+    return [
+      ...new Map(patients.map((patient) => [patient.id, patient])).values(),
+    ];
   }
 }

@@ -44,7 +44,9 @@ export class AppointmentController {
   async getUpcomingAppointmentsNumber(
     @Param('username') username: string,
   ): Promise<number> {
-    return await this.AppointmentService.getUpcomingAppointmentsNumber(username);
+    return await this.AppointmentService.getUpcomingAppointmentsNumber(
+      username,
+    );
   }
   @Get('/patient/requests/:username')
   async getPatientRequests(
@@ -71,12 +73,41 @@ export class AppointmentController {
   ): Promise<number> {
     return await this.AppointmentService.getNotPayedAppointments(username);
   }
-  
 
   //till here
-  @Get('doctor')
-  async getAppointmentsByDoctorName(@Query('name') name: string): Promise<Appointment[]> {
-    return await this.AppointmentService.getAppointmentsByDoctorName(name);
+
+  @Get('/doctor/upcoming/:username')
+  async getDoctorUpcomingAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getDoctorUpcomingAppointments(
+      username,
+    );
+  }
+
+  @Get('/doctor/today/:username')
+  async getDoctorTodayAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorTodayAppointments(username);
+  }
+  @Get('/doctor/passed/:username')
+  async getDoctorPassedAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorPassedAppointments(username);
+  }
+
+  @Get('/doctor/requested/:username')
+  async getDoctorRequestedAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    //console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorRequestedAppointments(
+      username,
+    );
   }
 
   @Get('doctor/:id')
@@ -131,14 +162,19 @@ export class AppointmentController {
     );
   }
 
- // @Put('complete/:id')
- // async completeAppointment(@Param('id') id: number): Promise<Appointment> {
-  //  return await this.AppointmentService.completedAppointment(id);
- // }
- //forcit el complete and it works
- @Put('complete/:id')
- async completeAppointment(@Param('id') id: number): Promise<Appointment> {
-     return await this.AppointmentService.completeAppointment(id);
- }
- 
+  @Put('complete/:id')
+  async completeAppointment(@Param('id') id: number): Promise<Appointment> {
+    return await this.AppointmentService.completedAppointment(id);
+  }
+
+  @Get('completedappointments/doctor/:doctorUsername/:patientUsername')
+  async getCompletedAppointmentsByDoctorAndPatient(
+    @Param('doctorUsername') doctorUsername: string,
+    @Param('patientUsername') patientUsername: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getCompletedAppointmentsByDoctorAndPatient(
+      doctorUsername,
+      patientUsername,
+    );
+  }
 }
