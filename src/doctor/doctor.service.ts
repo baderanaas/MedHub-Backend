@@ -71,7 +71,6 @@ export class DoctorService {
   async updateDoctor() {}
   async deleteDoctor() {}
 
-
   //here
   async getDoctorByUserName(userName: string): Promise<Doctor> {
     const doctor = await this.doctorRepository.findOne({

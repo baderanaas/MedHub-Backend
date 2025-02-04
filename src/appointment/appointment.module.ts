@@ -15,5 +15,6 @@ import { PatientModule } from 'src/patient/patient.module';
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService],
+  exports: [TypeOrmModule, AppointmentService],
 })
 export class AppointmentModule {}

@@ -1,5 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LessThan, MoreThanOrEqual, Repository,MoreThan, Between } from 'typeorm';
+import {
+  LessThan,
+  MoreThanOrEqual,
+  Repository,
+  MoreThan,
+  Between,
+  LessThanOrEqual,
+} from 'typeorm';
 import { Appointment } from './entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,14 +15,22 @@ import { PatientService } from 'src/patient/patient.service';
 import { DoctorService } from 'src/doctor/doctor.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AvailableSessionsDto } from './dto/availableSessionsDto';
+import { Doctor } from 'src/doctor/entities/doctor.entity';
+import { Patient } from 'src/patient/entities/patient.entity';
 
 @Injectable()
 export class AppointmentService {
+  // doctorRepository: any;
+  // patientRepository: any;
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
     private readonly doctorService: DoctorService,
     private readonly patientService: PatientService,
+    @InjectRepository(Doctor)
+    private readonly doctorRepository: Repository<Doctor>,
+    @InjectRepository(Patient)
+    private readonly patientRepository: Repository<Patient>,
   ) {}
 
   async getAppointments(): Promise<Appointment[]> {
@@ -32,13 +47,15 @@ export class AppointmentService {
   // }
   async getUpcomingAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
-  
+
     if (!patient) {
-      throw new NotFoundException(`Patient with username "${username}" not found`);
+      throw new NotFoundException(
+        `Patient with username "${username}" not found`,
+      );
     }
-  
+
     const currentDate = new Date();
-    
+
     const appointments = await this.appointmentRepository.find({
       where: {
         patient: { username: username },
@@ -47,14 +64,14 @@ export class AppointmentService {
       },
       order: { date: 'ASC' },
     });
-  
+
     if (!appointments.length) {
       throw new NotFoundException('No upcoming appointments found');
     }
-  
+
     return appointments;
   }
-  
+
   async getPatientAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
@@ -73,7 +90,6 @@ export class AppointmentService {
     return appointments;
   }
 
-
   async getPatientRequests(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
     console.log(patient);
@@ -90,31 +106,29 @@ export class AppointmentService {
     return appointments;
   }
 
-  
-
-
   async getPatientHistory(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
-  
+
     if (!patient) {
-      throw new NotFoundException(`Patient with username "${username}" not found`);
+      throw new NotFoundException(
+        `Patient with username "${username}" not found`,
+      );
     }
-  
+
     const appointments = await this.appointmentRepository.find({
       where: {
         patient: { username: username },
-        status: StatusEnum.ACCEPTED, 
+        status: StatusEnum.ACCEPTED,
         date: LessThan(new Date()),
       },
     });
-  
+
     if (!appointments.length) {
       throw new NotFoundException('No  past appointments found');
     }
-  
+
     return appointments;
   }
-
 
   async getDoctorAppointments(doctorId: number): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorById(doctorId);
@@ -177,7 +191,7 @@ export class AppointmentService {
   ): Promise<Appointment> {
     const appointment = await this.getAppointment(id);
     this.appointmentRepository.merge(appointment, data);
-    console.log('dataaaaa',data)
+    console.log('dataaaaa', data);
     return this.appointmentRepository.save(appointment);
   }
 
@@ -241,10 +255,9 @@ export class AppointmentService {
     return appointment;
   }
 
-
-
-
-  async getDoctorUpcomingAppointments(username:string):Promise<Appointment[]> {
+  async getDoctorUpcomingAppointments(
+    username: string,
+  ): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorByUserName(username);
     console.log(doctor);
 
@@ -262,17 +275,35 @@ export class AppointmentService {
     return appointments;
   }
 
+  async getDoctorPassedAppointments(username: string): Promise<Appointment[]> {
+    const doctor = await this.doctorService.getDoctorByUserName(username);
+    console.log(doctor);
+
+    const appointments = await this.appointmentRepository.find({
+      where: {
+        doctor: { username: username },
+        date: LessThan(new Date()),
+        status: StatusEnum.ACCEPTED,
+      },
+      order: { date: 'ASC' },
+    });
+
+    if (appointments.length === 0)
+      throw new NotFoundException('Appointment not found');
+    return appointments;
+  }
+
   async getDoctorTodayAppointments(username: string): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorByUserName(username);
     console.log(doctor);
-  
+
     // Get today's date range
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0); // Start of the day (00:00:00.000)
-  
+
     const todayEnd = new Date();
     todayEnd.setHours(23, 59, 59, 999); // End of the day (23:59:59.999)
-  
+
     // Fetch appointments for today
     const appointments = await this.appointmentRepository.find({
       where: {
@@ -282,14 +313,14 @@ export class AppointmentService {
       },
       order: { date: 'ASC' },
     });
-  
-    if (appointments.length === 0)
-      console.log("no app")
+
+    if (appointments.length === 0) console.log('no app');
     return appointments;
   }
 
-
-  async getDoctorRequestedAppointments(username:string):Promise<Appointment[]> {
+  async getDoctorRequestedAppointments(
+    username: string,
+  ): Promise<Appointment[]> {
     const doctor = await this.doctorService.getDoctorByUserName(username);
     console.log(doctor);
 
@@ -307,6 +338,41 @@ export class AppointmentService {
     return appointments;
   }
 
+  async getCompletedAppointmentsByDoctorAndPatient(
+    doctorUsername: string,
+    patientUsername: string,
+  ): Promise<Appointment[]> {
+    // Find the doctor by username
+    const doctor = await this.doctorRepository.findOne({
+      where: { username: doctorUsername },
+    });
 
+    if (!doctor) {
+      throw new NotFoundException(
+        'Doctor with username ${doctorUsername} not found',
+      );
+    }
 
+    // Find the patient by username
+    const patient = await this.patientRepository.findOne({
+      where: { username: patientUsername },
+    });
+
+    if (!patient) {
+      throw new NotFoundException(
+        'Patient with username ${patientUsername} not found',
+      );
+    }
+
+    // Fetch only completed appointments for the specific doctor and patient
+    return await this.appointmentRepository.find({
+      where: {
+        doctor: { id: doctor.id },
+        patient: { id: patient.id },
+        date: LessThanOrEqual(new Date()),
+        status: StatusEnum.ACCEPTED,
+      },
+      relations: ['patient', 'doctor'],
+    });
+  }
 }

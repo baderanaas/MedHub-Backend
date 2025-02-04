@@ -7,7 +7,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 //@UseGuards(JwtAuthGuard)
 export class DoctorController {
   constructor(private readonly doctorService: DoctorService) {}
-  
+
   @Get()
   async getDoctors(): Promise<Doctor[]> {
     return await this.doctorService.getDoctors();
@@ -21,15 +21,10 @@ export class DoctorController {
     return this.doctorService.getDoctorByName(name);
   }
 
-
   //here
   @Get('username/:username')
   async getDoctor(@Param('username') username: string) {
     console.log(username);
     return await this.doctorService.getDoctorByUserName(username);
   }
-
-  
-
-
 }

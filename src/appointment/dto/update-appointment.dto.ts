@@ -13,6 +13,4 @@ export class UpdateAppointmentDto {
   @IsEnum(StatusEnum)
   @IsOptional()
   status: StatusEnum;
- 
-
 }
