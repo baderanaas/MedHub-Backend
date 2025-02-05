@@ -368,7 +368,7 @@ export class AppointmentService {
     });
 
     if (appointments.length === 0)
-      throw new NotFoundException('Appointment not found');
+      console.log('no requests');
     return appointments;
   }
 
