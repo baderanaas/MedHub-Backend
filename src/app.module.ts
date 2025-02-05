@@ -6,7 +6,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Appointment } from './appointment/entity/appointment.entity';
 import { AppointmentModule } from './appointment/appointment.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { PatientModule } from './patient/patient.module';
 import { DoctorModule } from './doctor/doctor.module';
@@ -16,6 +15,7 @@ import { Patient } from './patient/entities/patient.entity';
 import { Doctor } from './doctor/entities/doctor.entity';
 import { MedicationModule } from './medication/medication.module';
 import { Medication } from './medication/entities/medication.entity';
+import { MongooseModule } from '@nestjs/mongoose';
 import { EmailModule } from './email/email.module';
 
 @Module({
@@ -38,13 +38,13 @@ import { EmailModule } from './email/email.module';
       }),
     }),
 
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-      }),
-    }),
+    // MongooseModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => ({
+    //     uri: configService.get<string>('MONGODB_URI'),
+    //   }),
+    // }),
 
     AppointmentModule,
     UserModule,
@@ -53,7 +53,8 @@ import { EmailModule } from './email/email.module';
     AuthModule,
     DoctorNoteModule,
     MedicationModule,
-    EmailModule,
+    MongooseModule.forRoot('mongodb://localhost:27017'), // Remplace par ton URL MongoDB
+    DoctorNoteModule, EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

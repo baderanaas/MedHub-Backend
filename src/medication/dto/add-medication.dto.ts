@@ -26,9 +26,5 @@ export class AddMedicationDto {
   midday: boolean = false;
 
   @IsOptional()
-  @IsBoolean()
-  night: boolean = false;
-
-  @IsNumber()
-  appointmentId: number;
+  night: boolean;
 }

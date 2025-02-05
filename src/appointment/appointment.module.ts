@@ -7,12 +7,14 @@ import { DoctorModule } from 'src/doctor/doctor.module';
 import { PatientModule } from 'src/patient/patient.module';
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Patient } from 'src/patient/entities/patient.entity';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment, Doctor, Patient]),
     DoctorModule,
     PatientModule,
+    EmailModule,
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService],

@@ -14,6 +14,6 @@ import { AppointmentModule } from 'src/appointment/appointment.module';
   ],
   controllers: [DoctorNoteController],
   providers: [DoctorNoteService],
-  exports: [DoctorNoteService], // Ajout du service dans les exports
+  exports: [DoctorNoteService], 
 })
 export class DoctorNoteModule {}

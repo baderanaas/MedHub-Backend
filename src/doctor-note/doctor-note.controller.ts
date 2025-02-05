@@ -15,18 +15,16 @@ import { UpdateDoctorNoteDto } from './dto/update-doctor-note.dto';
 export class DoctorNoteController {
   constructor(private readonly doctorNoteService: DoctorNoteService) {}
 
-  @Post()
+  @Post(':doctorId/:patientId')
   async create(
-    @Body() createDoctorNoteDto: CreateDoctorNoteDto,
     @Param('doctorId') doctorId: number,
     @Param('patientId') patientId: number,
+    @Body() createDoctorNoteDto: CreateDoctorNoteDto,
   ) {
-    return this.doctorNoteService.create(
-      createDoctorNoteDto,
-      doctorId,
-      patientId,
-    );
+    return this.doctorNoteService.create(createDoctorNoteDto, doctorId, patientId);
   }
+  
+  
 
   @Get()
   async findAll() {
