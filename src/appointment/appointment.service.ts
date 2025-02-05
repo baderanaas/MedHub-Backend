@@ -72,23 +72,22 @@ export class AppointmentService {
     return appointments;
   }
 
-
   async getAppointmentsNextWeek(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
-  
+
     if (!patient) {
       throw new NotFoundException(
         `Patient with username "${username}" not found`,
       );
     }
-  
+
     const currentDate = new Date();
     const nextWeekStart = new Date(currentDate);
-    nextWeekStart.setDate(currentDate.getDate() ); // Set the date for the next week's start
-  
+    nextWeekStart.setDate(currentDate.getDate()); // Set the date for the next week's start
+
     const nextWeekEnd = new Date(nextWeekStart);
     nextWeekEnd.setDate(nextWeekStart.getDate() + 7); // Set the end of the next week
-  
+
     const appointments = await this.appointmentRepository.find({
       where: {
         patient: { username: username },
@@ -97,14 +96,13 @@ export class AppointmentService {
       },
       order: { date: 'ASC' },
     });
-  
+
     if (!appointments.length) {
       throw new NotFoundException('No appointments found for next week');
     }
-  
+
     return appointments;
   }
-  
 
   async getPatientAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
@@ -226,9 +224,10 @@ export class AppointmentService {
     id: number,
     data: UpdateAppointmentDto,
   ): Promise<Appointment> {
+    
     const appointment = await this.getAppointment(id);
     this.appointmentRepository.merge(appointment, data);
-    console.log('dataaaaa', data);
+    
     return this.appointmentRepository.save(appointment);
   }
 
@@ -265,13 +264,18 @@ export class AppointmentService {
     console.log('available' + availableSessions);
     return availableSessions;
   }
-  async reschedule(id: number, data: CreateAppointmentDto) {
+  async reschedule(
+    id: number,
+    data: CreateAppointmentDto,
+  ): Promise<Appointment> {
+    console.log('dataaaaa', data);
+    console.log('id', id);
     const appointment = await this.appointmentRepository.findOne({
       where: {
         id: id,
       },
     });
-
+    
     if (appointment) {
       this.appointmentRepository.merge(appointment, data);
     }

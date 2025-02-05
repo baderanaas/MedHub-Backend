@@ -11,10 +11,11 @@ import {
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Controller('/appointment')
 @UseGuards(JwtAuthGuard)
@@ -140,6 +141,14 @@ export class AppointmentController {
       patientUserName,
       doctorMat,
     );
+  }
+  @Put('reschedule/:appointmentId')
+  async reschedule(
+    @Body() date: CreateAppointmentDto,
+    @Param('appointmentId') appointmentId: number,
+  ): Promise<Appointment> {
+    console.log('fook', appointmentId);
+    return await this.AppointmentService.reschedule(appointmentId, date);
   }
 
   @Put(':id')
