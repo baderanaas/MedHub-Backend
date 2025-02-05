@@ -7,16 +7,24 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 @UseGuards(JwtAuthGuard)
 export class DoctorController {
   constructor(private readonly doctorService: DoctorService) {}
+
   @Get()
   async getDoctors(): Promise<Doctor[]> {
     return await this.doctorService.getDoctors();
   }
-  @Get('/:mat')
-  async getDoctor(@Param('mat') matricule: number): Promise<Doctor> {
-    return await this.doctorService.getDoctorByMat(matricule);
-  }
+  // @Get('/:mat')
+  // async getDoctor(@Param('mat') matricule: number): Promise<Doctor> {
+  //   return await this.doctorService.getDoctorByMat(matricule);
+  // }
   @Get('/one')
-  async getDoctorByName(@Query('name') name): Promise<Doctor[]> {
-    return this.doctorService.getDoctorByName(name);
+  async searchDoctorByName(@Query('name') name): Promise<Doctor[]> {
+    return this.doctorService.searchDoctorByName(name);
+  }
+
+  //here
+  @Get('username/:username')
+  async getDoctor(@Param('username') username: string) {
+    console.log(username);
+    return await this.doctorService.getDoctorByUserName(username);
   }
 }

@@ -38,5 +38,4 @@ export class CreatePatientDto {
   @IsNotEmpty({ message: 'Email is required' })
   @IsEmail({}, { message: 'Email must be a valid email address' })
   email: string;
-  
 }

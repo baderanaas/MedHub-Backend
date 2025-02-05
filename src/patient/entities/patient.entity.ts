@@ -17,7 +17,9 @@ export class Patient extends User {
 
   @OneToMany(() => Appointment, (appointment) => appointment.patient)
   appointments: Appointment[];
-  @ManyToMany(() => Medication, (medication) => medication.patient)
+  @ManyToMany(() => Medication, (medication) => medication.patient, {
+    eager: true,
+  })
   @JoinTable()
   medications: Medication[];
 }

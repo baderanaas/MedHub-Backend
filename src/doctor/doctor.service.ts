@@ -2,19 +2,29 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Doctor } from './entities/doctor.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Patient } from 'src/patient/entities/patient.entity';
+
 
 @Injectable()
 export class DoctorService {
   constructor(
     @InjectRepository(Doctor)
     private readonly doctorRepository: Repository<Doctor>,
-    @InjectRepository(Doctor)
-    private readonly patientRepository: Repository<Patient>,
+    // @InjectRepository(Doctor)
+    // private readonly patientRepository: Repository<Patient>,
   ) {}
   async getDoctors(): Promise<Doctor[]> {
     return await this.doctorRepository.find();
   }
+  async getDoctorByUserName(userName: string): Promise<Doctor> {
+    const doctor = await this.doctorRepository.findOne({
+      where: { username: userName },
+    });
+    if (!doctor) {
+      throw new NotFoundException('Doctor not found');
+    }
+    return doctor;
+  }
+
   async getDoctorById(doctorId: number) {
     const doctor = await this.doctorRepository.findOne({
       where: { id: doctorId },
@@ -35,7 +45,8 @@ export class DoctorService {
     }
     return doctor;
   }
-  async getDoctorByName(name: string): Promise<Doctor[]> {
+  
+  async searchDoctorByName(name: string): Promise<Doctor[]> {
     const nameParts = name.trim().split(/\s+/);
     let firstName: string;
     let lastName: string;
@@ -70,4 +81,7 @@ export class DoctorService {
   async addDoctor() {}
   async updateDoctor() {}
   async deleteDoctor() {}
+
+
+  
 }

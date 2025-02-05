@@ -32,12 +32,29 @@ export class AppointmentController {
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientAppointments(userName);
   }
+
+  //working here
+  @Get('/patient/upcoming/:username')
+  async getUpcomingAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getUpcomingAppointments(username);
+  }
+  @Get('/patient/upcomingNumber/:username')
+  async getUpcomingAppointmentsNumber(
+    @Param('username') username: string,
+  ): Promise<number> {
+    return await this.AppointmentService.getUpcomingAppointmentsNumber(
+      username,
+    );
+  }
   @Get('/patient/requests/:username')
   async getPatientRequests(
     @Param('username') userName: string,
   ): Promise<Appointment[]> {
     return await this.AppointmentService.getPatientRequests(userName);
   }
+
   @Get('/patient/history/:username')
   async getPatientHistory(
     @Param('username') username: string,
@@ -56,12 +73,43 @@ export class AppointmentController {
   ): Promise<number> {
     return await this.AppointmentService.getNotPayedAppointments(username);
   }
-  @Get('/patient/upcoming/:username')
-  async getPatientUpcomingAppointments(
+
+  //till here
+
+  @Get('/doctor/upcoming/:username')
+  async getDoctorUpcomingAppointments(
     @Param('username') username: string,
-  ): Promise<number> {
-    return await this.AppointmentService.getUpcomingAppointments(username);
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getDoctorUpcomingAppointments(
+      username,
+    );
   }
+
+  @Get('/doctor/today/:username')
+  async getDoctorTodayAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorTodayAppointments(username);
+  }
+  @Get('/doctor/passed/:username')
+  async getDoctorPassedAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorPassedAppointments(username);
+  }
+
+  @Get('/doctor/requested/:username')
+  async getDoctorRequestedAppointments(
+    @Param('username') username: string,
+  ): Promise<Appointment[]> {
+    //console.log('hellllllllllooooo');
+    return await this.AppointmentService.getDoctorRequestedAppointments(
+      username,
+    );
+  }
+
   @Get('doctor/:id')
   async getDoctorAppointments(@Param('id') id: number): Promise<Appointment[]> {
     return await this.AppointmentService.getDoctorAppointments(id);
@@ -123,5 +171,16 @@ export class AppointmentController {
   @Put('complete/:id')
   async completeAppointment(@Param('id') id: number): Promise<Appointment> {
     return await this.AppointmentService.completedAppointment(id);
+  }
+
+  @Get('completedappointments/doctor/:doctorUsername/:patientUsername')
+  async getCompletedAppointmentsByDoctorAndPatient(
+    @Param('doctorUsername') doctorUsername: string,
+    @Param('patientUsername') patientUsername: string,
+  ): Promise<Appointment[]> {
+    return await this.AppointmentService.getCompletedAppointmentsByDoctorAndPatient(
+      doctorUsername,
+      patientUsername,
+    );
   }
 }

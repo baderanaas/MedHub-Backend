@@ -5,12 +5,14 @@ import {
   Get,
   Param,
   Post,
+  Query,
   // Put,
   UseGuards,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
+import { Patient } from './entities/patient.entity';
 
 @Controller('patient')
 @UseGuards(JwtAuthGuard)
@@ -30,6 +32,19 @@ export class PatientController {
   @Post()
   async addPatient(@Body() patientDto: CreatePatientDto) {
     return await this.patientService.addPatient(patientDto);
+  }
+  @Post('medication/:username')
+  async addMedication(
+    @Param('username') username: string,
+    @Query('medName') medName: string,
+  ) {
+    return await this.patientService.addMedication(medName, username);
+  }
+  @Get('completed/doctor/:doctorUsername')
+  async getPatientsByDoctorUsername(
+    @Param('doctorUsername') doctorUsername: string,
+  ): Promise<Patient[]> {
+    return this.patientService.getPatientsByDoctorUsername(doctorUsername);
   }
 
   // @Put(':id')
