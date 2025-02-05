@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   // Put,
   UseGuards,
 } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { Patient } from './entities/patient.entity';
 
 @Controller('patient')
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
@@ -32,7 +33,13 @@ export class PatientController {
   async addPatient(@Body() patientDto: CreatePatientDto) {
     return await this.patientService.addPatient(patientDto);
   }
-
+  @Post('medication/:username')
+  async addMedication(
+    @Param('username') username: string,
+    @Query('medName') medName: string,
+  ) {
+    return await this.patientService.addMedication(medName, username);
+  }
   @Get('completed/doctor/:doctorUsername')
   async getPatientsByDoctorUsername(
     @Param('doctorUsername') doctorUsername: string,

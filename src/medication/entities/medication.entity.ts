@@ -1,8 +1,10 @@
+import { Patient } from 'src/patient/entities/patient.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -30,4 +32,6 @@ export class Medication {
   updatedAt: Date;
   @DeleteDateColumn()
   deletedAt: Date;
+  @ManyToMany(() => Patient, (patient) => patient.medications)
+  patient: Patient;
 }

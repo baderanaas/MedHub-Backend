@@ -4,7 +4,7 @@ import { Doctor } from './entities/doctor.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @Controller('/doctor')
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class DoctorController {
   constructor(private readonly doctorService: DoctorService) {}
 
@@ -17,8 +17,8 @@ export class DoctorController {
   //   return await this.doctorService.getDoctorByMat(matricule);
   // }
   @Get('/one')
-  async getDoctorByName(@Query('name') name): Promise<Doctor[]> {
-    return this.doctorService.getDoctorByName(name);
+  async searchDoctorByName(@Query('name') name): Promise<Doctor[]> {
+    return this.doctorService.searchDoctorByName(name);
   }
 
   //here
