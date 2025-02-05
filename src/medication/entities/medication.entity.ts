@@ -1,10 +1,12 @@
 import { Appointment } from 'src/appointment/entity/appointment.entity';
+import { Patient } from 'src/patient/entities/patient.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -44,4 +46,6 @@ export class Medication {
 
   @DeleteDateColumn()
   deletedAt: Date;
+  @ManyToMany(() => Patient, (patient) => patient.medications)
+  patient: Patient;
 }

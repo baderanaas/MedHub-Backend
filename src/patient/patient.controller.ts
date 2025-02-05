@@ -5,14 +5,17 @@ import {
   Get,
   Param,
   Post,
+  Query,
+  UseGuards,
   // Put,
 } from '@nestjs/common';
 import { PatientService } from './patient.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
 import { Patient } from './entities/patient.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @Controller('patient')
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
@@ -30,7 +33,13 @@ export class PatientController {
   async addPatient(@Body() patientDto: CreatePatientDto) {
     return await this.patientService.addPatient(patientDto);
   }
-
+  @Post('medication/:username')
+  async addMedication(
+    @Param('username') username: string,
+    @Query('medName') medName: string,
+  ) {
+    return await this.patientService.addMedication(medName, username);
+  }
   @Get('completed/doctor/:doctorUsername')
   async getPatientsByDoctorUsername(
     @Param('doctorUsername') doctorUsername: string,
@@ -50,4 +59,14 @@ export class PatientController {
   // async deletePatient(@Param('id') id: number) {
   //   return await this.patientService.deletePatient(id);
   // }
+
+  @Get('statistics/age')
+  async getAgeDistribution() {
+    return this.patientService.getAgeDistribution();
+  }
+
+  @Get('statistics/gender')
+  async getGenderDistribution() {
+    return this.patientService.getGenderDistribution();
+  }
 }

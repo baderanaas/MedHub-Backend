@@ -1,7 +1,8 @@
 import { Appointment } from 'src/appointment/entity/appointment.entity';
 import { BloodType } from 'src/common/enums/blood-type.enum';
+import { Medication } from 'src/medication/entities/medication.entity';
 import { User } from 'src/user/entity/user.entity';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 @Entity()
 export class Patient extends User {
@@ -16,4 +17,9 @@ export class Patient extends User {
 
   @OneToMany(() => Appointment, (appointment) => appointment.patient)
   appointments: Appointment[];
+  @ManyToMany(() => Medication, (medication) => medication.patient, {
+    eager: true,
+  })
+  @JoinTable()
+  medications: Medication[];
 }

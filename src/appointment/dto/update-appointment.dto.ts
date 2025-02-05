@@ -1,4 +1,4 @@
-import {  IsEnum, IsOptional } from 'class-validator';
+import {IsEnum, IsOptional } from 'class-validator';
 import { StatusEnum } from 'src/common/enums/status.enum';
 
 

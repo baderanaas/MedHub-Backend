@@ -189,7 +189,7 @@ export class AppointmentService {
     return notPayed.length;
   }
   async getByDoctorName(name: string): Promise<Appointment[]> {
-    const doctors = await this.doctorService.getDoctorByName(name);
+    const doctors = await this.doctorService.searchDoctorByName(name);
     let allAppointments: Appointment[] = [];
     for (const doctor of doctors) {
       console.log('doctor in appointments: ', doctor);
@@ -198,6 +198,8 @@ export class AppointmentService {
           doctor: {
             matricule: doctor.matricule,
           },
+          date: MoreThanOrEqual(new Date()),
+          status: StatusEnum.ACCEPTED,
         },
         relations: ['doctor'],
       });
@@ -206,6 +208,7 @@ export class AppointmentService {
     }
     return allAppointments;
   }
+
   async addAppointment(
     data: CreateAppointmentDto,
     patientUserName: string,
@@ -294,6 +297,18 @@ export class AppointmentService {
     console.log('available' + availableSessions);
     return availableSessions;
   }
+  async reschedule(id: number, data: CreateAppointmentDto) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+
+    if (appointment) {
+      this.appointmentRepository.merge(appointment, data);
+    }
+    return await this.appointmentRepository.save(appointment);
+  }
 
   async respondAppointment(
     id: number,
@@ -374,21 +389,14 @@ export class AppointmentService {
   }
 
   async getDoctorTodayAppointments(username: string): Promise<Appointment[]> {
-    const doctor = await this.doctorService.getDoctorByUserName(username);
-    console.log(doctor);
-
-    // Get today's date range
     const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0); // Start of the day (00:00:00.000)
-
+    todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999); // End of the day (23:59:59.999)
-
-    // Fetch appointments for today
+    todayEnd.setHours(23, 59, 59, 999);
     const appointments = await this.appointmentRepository.find({
       where: {
         doctor: { username: username },
-        date: Between(todayStart, todayEnd), // Filter by today's date range
+        date: Between(todayStart, todayEnd),
         status: StatusEnum.ACCEPTED,
       },
       order: { date: 'ASC' },
@@ -414,7 +422,7 @@ export class AppointmentService {
     });
 
     if (appointments.length === 0)
-      throw new NotFoundException('Appointment not found');
+      console.log('no requests');
     return appointments;
   }
 

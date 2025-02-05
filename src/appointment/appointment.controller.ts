@@ -7,15 +7,17 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { Appointment } from './entity/appointment.entity';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { StatusEnum } from 'src/common/enums/status.enum';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 
 @Controller('/appointment')
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
 

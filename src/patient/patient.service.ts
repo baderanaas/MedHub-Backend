@@ -9,6 +9,8 @@ import { differenceInYears } from 'date-fns';
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Appointment } from 'src/appointment/entity/appointment.entity';
 import { StatusEnum } from 'src/common/enums/status.enum';
+import { User } from 'src/user/entity/user.entity';
+import { MedicationService } from 'src/medication/medication.service';
 
 @Injectable()
 export class PatientService {
@@ -19,6 +21,9 @@ export class PatientService {
     private readonly doctorRepository: Repository<Doctor>,
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    private readonly medicationService: MedicationService,
   ) {}
 
   async getPatients(): Promise<Patient[]> {
@@ -69,7 +74,6 @@ export class PatientService {
   async getPatientsByDoctorUsername(
     doctorUsername: string,
   ): Promise<Patient[]> {
-    // Find the doctor entity by username
     const doctor = await this.doctorRepository.findOne({
       where: { username: doctorUsername },
     });
@@ -80,19 +84,71 @@ export class PatientService {
       );
     }
 
-    // Fetch appointments of this doctor with ACCEPTED and COMPLETED statuses
     const appointments = await this.appointmentRepository.find({
       where: {
-        doctor: { id: doctor.id }, // Now using the doctor's ID after fetching it via username
+        doctor: { id: doctor.id },
         status: In([StatusEnum.ACCEPTED]),
       },
       relations: ['patient'],
     });
 
-    // Extract unique patients
     const patients = appointments.map((appointment) => appointment.patient);
     return [
       ...new Map(patients.map((patient) => [patient.id, patient])).values(),
     ];
+  }
+
+
+  async getAgeDistribution(): Promise<{ ageGroup: string; count: number }[]> {
+    const ageDistribution = await this.userRepository
+      .createQueryBuilder('user')
+      .select(
+        `CASE
+          WHEN user.age < 18 THEN '0-17'
+          WHEN user.age BETWEEN 18 AND 35 THEN '18-35'
+          WHEN user.age BETWEEN 36 AND 50 THEN '36-50'
+          ELSE '51+'
+        END AS ageGroup`
+      )
+      .addSelect('COUNT(user.id)', 'count')
+      .where('user.role = :role', { role: Role.PATIENT })
+      .groupBy('ageGroup')
+      .getRawMany();
+  
+    return ageDistribution.map((row) => ({
+      ageGroup: row.agegroup,
+      count: parseInt(row.count, 10),
+    }));
+  }
+  
+  
+
+  async getGenderDistribution(): Promise<{ gender: string; count: number }[]> {
+    const genderDistribution = await this.userRepository
+      .createQueryBuilder('user')
+      .select('user.sexe', 'gender')
+      .addSelect('COUNT(user.id)', 'count')
+      .where('user.role = :role', { role: Role.PATIENT }) // Filter by patient role
+      .groupBy('user.sexe')
+      .getRawMany();
+
+    return genderDistribution.map((row) => ({
+      gender: row.gender,
+      count: parseInt(row.count, 10),
+    }));
+  }
+  async addMedication(medName: string, userName: string): Promise<Patient> {
+    const patient = await this.getPatientByUserName(userName);
+    const medication =
+      await this.medicationService.getMedicationByName(medName);
+    if (!patient) {
+      throw new NotFoundException('Patient not found');
+    }
+
+    if (!medication) {
+      throw new NotFoundException(`Medication with name ${medName} not found`);
+    }
+    patient.medications.push(medication);
+    return await this.patientRepository.save(patient);
   }
 }

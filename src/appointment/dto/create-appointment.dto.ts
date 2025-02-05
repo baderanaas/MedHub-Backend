@@ -1,7 +1,10 @@
-import { IsISO8601, IsNotEmpty, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+
 
 export class CreateAppointmentDto {
-  @IsISO8601()
+
+  @Type(() => Date)
   @IsNotEmpty()
   date: Date;
 
