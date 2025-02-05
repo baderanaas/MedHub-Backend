@@ -59,4 +59,14 @@ export class PatientController {
   // async deletePatient(@Param('id') id: number) {
   //   return await this.patientService.deletePatient(id);
   // }
+
+  @Get('statistics/age')
+  async getAgeDistribution() {
+    return this.patientService.getAgeDistribution();
+  }
+
+  @Get('statistics/gender')
+  async getGenderDistribution() {
+    return this.patientService.getGenderDistribution();
+  }
 }

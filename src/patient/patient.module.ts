@@ -5,6 +5,7 @@ import { PatientService } from './patient.service';
 import { PatientController } from './patient.controller';
 import { AppointmentModule } from 'src/appointment/appointment.module';
 import { DoctorModule } from 'src/doctor/doctor.module';
+import { UserModule } from 'src/user/user.module';
 
 import { MedicationModule } from 'src/medication/medication.module';
 
@@ -13,6 +14,7 @@ import { MedicationModule } from 'src/medication/medication.module';
     TypeOrmModule.forFeature([Patient]),
     forwardRef(() => AppointmentModule),
     forwardRef(() => DoctorModule),
+    forwardRef(() => UserModule),
     MedicationModule
   ],
   providers: [PatientService],
