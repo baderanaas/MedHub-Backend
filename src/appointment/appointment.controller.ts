@@ -17,7 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth-guard';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 @Controller('/appointment')
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class AppointmentController {
   constructor(private readonly AppointmentService: AppointmentService) {}
 

@@ -4,9 +4,11 @@ import { MedicationService } from './medication.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Medication } from './entities/medication.entity';
 
+
 @Module({
   controllers: [MedicationController],
   providers: [MedicationService],
-  imports: [TypeOrmModule.forFeature([Medication])],
+  imports: [TypeOrmModule.forFeature([Medication]),],
+  exports:[TypeOrmModule,MedicationService]
 })
 export class MedicationModule {}

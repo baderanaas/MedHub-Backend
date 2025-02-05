@@ -7,12 +7,15 @@ import { AppointmentModule } from 'src/appointment/appointment.module';
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { UserModule } from 'src/user/user.module';
 
+import { MedicationModule } from 'src/medication/medication.module';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Patient]),
     forwardRef(() => AppointmentModule),
     forwardRef(() => DoctorModule),
     forwardRef(() => UserModule),
+    MedicationModule
   ],
   providers: [PatientService],
   controllers: [PatientController],
