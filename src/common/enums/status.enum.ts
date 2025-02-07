@@ -4,4 +4,5 @@ export enum StatusEnum {
   REJECTED = 'rejected',
   CANCELLED = 'cancelled',
   COMPLETED = 'completed',
+  RESCHEDULED='rescheduled',
 }

@@ -17,9 +17,13 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { AvailableSessionsDto } from './dto/availableSessionsDto';
 import { Doctor } from 'src/doctor/entities/doctor.entity';
 import { Patient } from 'src/patient/entities/patient.entity';
+import { EmailService } from 'src/email/email.service';
+import { SessionLabelPipe } from 'src/pipes/session-label.pipe';
+import { sendEmailDto } from 'src/email/dto/email.dto';
 
 @Injectable()
 export class AppointmentService {
+
   // doctorRepository: any;
   // patientRepository: any;
   constructor(
@@ -31,6 +35,7 @@ export class AppointmentService {
     private readonly doctorRepository: Repository<Doctor>,
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
+    private readonly emailService: EmailService,  
   ) {}
 
   async getAppointments(): Promise<Appointment[]> {
@@ -224,12 +229,55 @@ export class AppointmentService {
     id: number,
     data: UpdateAppointmentDto,
   ): Promise<Appointment> {
-    
     const appointment = await this.getAppointment(id);
+  
     this.appointmentRepository.merge(appointment, data);
-    
-    return this.appointmentRepository.save(appointment);
+    const updatedAppointment = await this.appointmentRepository.save(appointment);
+  
+    const sessionLabelPipe = new SessionLabelPipe();
+    const sessionLabel = sessionLabelPipe.transform(appointment.session);
+  
+    if (['accepted', 'rejected', 'cancelled'].includes(data.status)) {
+      const patientEmail = appointment.patient?.email;
+      const doctorUsername = appointment.doctor?.username;
+  
+      if (patientEmail) {
+        let subject = '';
+        let message = '';
+  
+        switch (data.status) {
+          case 'accepted':
+            subject = 'Votre rendez-vous a été accepté';
+            message = `Votre rendez-vous prévu le <b>${appointment.date}</b> chez le docteur <b>${doctorUsername}</b> à <b>${sessionLabel}</b> a été accepté.`;
+            break;
+          case 'rejected':
+            subject = 'Votre rendez-vous a été rejeté';
+            message = `Nous sommes désolés, mais votre demande de rendez-vous chez le docteur <b>${doctorUsername}</b> pour le <b>${appointment.date}</b> à <b>${sessionLabel}</b> a été rejetée.`;
+            break;
+          case 'cancelled':
+            subject = 'Votre rendez-vous a été annulé';
+            message = `Votre rendez-vous prévu le <b>${appointment.date}</b> chez le docteur <b>${doctorUsername}</b> à <b>${sessionLabel}</b> a été annulé.`;
+            break;
+        }
+  
+        const emailDto: sendEmailDto = {
+          recipients: [patientEmail],
+          subject,
+          html: `
+            <p>Bonjour ${appointment.patient.firstName},</p>
+            <p>${message}</p>
+            <p>Merci de votre confiance.</p>
+            <p>MedHub</p>
+          `,
+        };
+  
+        await this.emailService.sendEmail(emailDto);
+      }
+    }
+  
+    return updatedAppointment;
   }
+  
 
   async deleteAppointment(id: number): Promise<void> {
     const appointment = await this.getAppointment(id);

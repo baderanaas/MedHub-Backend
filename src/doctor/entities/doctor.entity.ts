@@ -15,6 +15,9 @@ export class Doctor extends User {
   })
   speciality: DoctorSpecialityEnum;
 
+  @Column({ nullable: true })
+  location: string;
+
   @OneToMany(() => Appointment, (appointment) => appointment.doctor)
   appointments: Appointment[];
 }

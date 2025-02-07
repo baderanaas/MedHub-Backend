@@ -6,12 +6,14 @@ import { AppointmentController } from './appointment.controller';
 
 import { DoctorModule } from 'src/doctor/doctor.module';
 import { PatientModule } from 'src/patient/patient.module';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Appointment]),
     DoctorModule,
     PatientModule,
+    EmailModule,
   ],
   controllers: [AppointmentController],
   providers: [AppointmentService],
