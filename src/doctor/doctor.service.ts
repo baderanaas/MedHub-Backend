@@ -9,8 +9,7 @@ export class DoctorService {
   constructor(
     @InjectRepository(Doctor)
     private readonly doctorRepository: Repository<Doctor>,
-    // @InjectRepository(Doctor)
-    // private readonly patientRepository: Repository<Patient>,
+    
   ) {}
   async getDoctors(): Promise<Doctor[]> {
     return await this.doctorRepository.find();

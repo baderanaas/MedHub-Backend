@@ -20,7 +20,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: payloadInterface) {
-    // Fetch the user based on the username from the payload
     const user = await this.userRepository.findOneBy([
       {
         username: payload.username,
@@ -29,7 +28,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ]);
 
     if (user) {
-      // const { password,salt, ...result } = user;
       return user;
     } else {
       throw new UnauthorizedException();

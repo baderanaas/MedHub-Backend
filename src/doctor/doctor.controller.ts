@@ -12,16 +12,11 @@ export class DoctorController {
   async getDoctors(): Promise<Doctor[]> {
     return await this.doctorService.getDoctors();
   }
-  // @Get('/:mat')
-  // async getDoctor(@Param('mat') matricule: number): Promise<Doctor> {
-  //   return await this.doctorService.getDoctorByMat(matricule);
-  // }
+ 
   @Get('/one')
   async searchDoctorByName(@Query('name') name): Promise<Doctor[]> {
     return this.doctorService.searchDoctorByName(name);
   }
-
-  //here
   @Get('username/:username')
   async getDoctor(@Param('username') username: string) {
     console.log(username);

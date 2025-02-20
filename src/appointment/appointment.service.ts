@@ -20,8 +20,6 @@ import { Patient } from 'src/patient/entities/patient.entity';
 
 @Injectable()
 export class AppointmentService {
-  // doctorRepository: any;
-  // patientRepository: any;
   constructor(
     @InjectRepository(Appointment)
     private readonly appointmentRepository: Repository<Appointment>,
@@ -43,8 +41,6 @@ export class AppointmentService {
     if (!appointment) throw new NotFoundException('Appointment not found');
     return appointment;
   }
-  // async getPatientAppointments(username: string): Promise<Appointment[]> {
-  // }
   async getUpcomingAppointments(username: string): Promise<Appointment[]> {
     const patient = await this.patientService.getPatientByUserName(username);
 
